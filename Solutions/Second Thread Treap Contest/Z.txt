@@ -1,0 +1,116 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int srand() {
+    return (rand()<<15) + rand();
+}
+
+struct Node{
+    int pri;
+    int sz;
+    long long val;
+    long long summ;
+    Node *l, *r, *par;
+    Node(long long val1) : summ(val1),val(val1),pri(srand()),sz(1),l(nullptr),r(nullptr),par(nullptr) {}
+};
+
+int get_sz(Node *v) {
+    if (!v) return 0;
+    return v->sz;
+}
+
+long long get_summ(Node *v) {
+    if (!v) return 0;
+    return v->summ;
+}
+
+void upd(Node *v) {
+    if (!v) return;
+    v->sz = get_sz(v->l) + get_sz(v->r) + 1;
+    v->summ = get_summ(v->l) + get_summ(v->r) + v->val;
+    if (v->l) v->l->par = v;
+    if (v->r) v->r->par = v;
+}
+
+pair<Node*,Node*> split(Node* root, int k) {
+    if (!root) {
+        return {nullptr,nullptr};
+    }
+    root->par = nullptr;
+    if (get_sz(root->l)>=k) {
+        pair<Node*,Node*> j = split(root->l,k);
+        root->l = j.second;
+        upd(root);
+        return {j.first,root};
+    } else {
+        pair<Node*,Node*> j = split(root->r,k - get_sz(root->l) - 1);
+        root->r = j.first;
+        upd(root);
+        return {root,j.second};
+    }
+}
+
+Node* merge(Node* l,Node* r) {
+    if (!l || !r) {
+        return l?l:r;
+    }
+    if (l->pri > r->pri) {
+        l->r = merge(l->r,r);
+        upd(l);
+        return l;
+    } else {
+        r->l = merge(l,r->l);
+        upd(r);
+        return r;
+    }
+}
+
+Node* find_par(Node* root) {
+    if (root->par==nullptr) return root; else return find_par(root->par);
+}
+
+const int MAXN = 5e5 + 10;
+
+int main() {
+
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+    Node* nodes[MAXN];
+
+    int q;
+    cin>>q;
+    for(int qq=0;qq<q;qq++) {
+        int type;
+        cin>>type;
+        if (type==1) {
+            int val;
+            cin>>val;
+            nodes[qq+1] = new Node(val);
+        } else
+        if (type==2) {
+            int y,z;
+            cin>>y>>z;
+            Node *v1 = find_par(nodes[y]), *v2 = find_par(nodes[z]);
+            if (v1!=v2) {
+                merge(v1,v2);
+            }
+        } else
+        if (type==3) {
+            int y,z;
+            cin>>y>>z;
+            Node* v = find_par(nodes[y]);
+            if (get_sz(v)>z) split(v,z);
+        } else
+        if (type==4) {
+            int y;
+            cin>>y;
+            Node* v = find_par(nodes[y]);
+            cout<<get_summ(v)<<'\n';
+        }
+    }
+
+    return 0;
+}
