@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>Алгоритм Мо</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Алгоритм Мо</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+
+	<div class="summary_block">
+		<div class="main_content">
+			<p><em>К сожалению я не буду подробно расписывать данную тему, постарайтесь побольше почитать самостоятельно.</em></p>
+			<p>Алгоритм Мо - продолжение темы Корневой Декомпозиции. Данный алгоритм любят использовать на Казахстанских олимпиадах.</p>
+			<p>Отличные статьи: <a href="https://ru.algorithmica.org/cs/decomposition/mo/" target="_blank">алгоритмика</a>, <a href="https://neerc.ifmo.ru/wiki/index.php?title=%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%9C%D0%BE" target="_blank">конспекты ИТМО</a>.</p>
+			<p>Все разновидности алгоритма МО работают только в Офлайне (все запросы известны сразу).</p>
+			<h2>Классический Мо.</h2>
+			<p>Позволяет считать сложные функции на большом количестве отрезков на массиве без запросов изменения.</p>
+			<p>Для еще одной вариации данного алгоритма (<b>МО с откатами</b>) стоит постмотреть последний раздел СНМа на КФ EDU. Левая граница движется только влево, после этого мы откатываем нашу структуру поддержания функции.</p>
+			<h2>Мо на деревьях.</h2>
+			<p>Позволяет считать функции на вершинных путях, обычных путях, используя эйлеров обход.</p>
+			<p>При этом нужно правильно определять границы на эйлеровом обходе, делать отдельные проверки для LCA.</p>
+			<p>Вот статья об этом: <a href="https://codeforces.com/blog/entry/43230" target="_blank">статья</a>.</p>
+			<h2>3D Мо.</h2>
+			<p>То же самое, что и классический МО, но при этом возможны запросы изменений. При применении операции свапаем значение в операции и текущее значение на позиции.</p>
+		</div>
+	</div>
+
+	<div class="problems_block">
+		<div class="main_content">
+			<table>
+				<col width="20%">
+   				<col width="65%">
+				<col width="15%">
+				<tr>
+					<th>Задача</th>
+					<th>Примечание/Подсказки</th>
+					<th>Решение</th>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/contest/86/problem/D" target="_blank">CF_86 _D</a></td>
+					<td><ul>
+						<li>Самая классическая задача на классический МО.</li>
+					</ul></td>
+					<td><a href="../Solutions/CF_86_D.txt" target="_blank">My solution</a></td>
+				</tr>
+
+				<tr>
+					<td><a href="https://www.codechef.com/problems/STDPRGS" target="_blank">CodeChef STDPRGS</a></td>
+					<td><ul>
+						<li>Классический МО.</li>
+					</ul></td>
+					<td><a href="../Solutions/СodeChef_STDPGS.txt" target="_blank">My solution</a></td>
+				</tr>
+				<tr>
+					<td><a href="https://www.codechef.com/problems/RNGMOD" target="_blank">CodeChef RNGMOD</a></td>
+					<td><ul>
+						<li>Классический МО с откатами.</li>
+					</ul></td>
+					<td><a href="../Solutions/CodeChef_RNGMOD_1.txt" target="_blank">Долгое,но понятное решение на деке</a><br><br>
+						<a href="../Solutions/CodeChef_RNGMOD_2.txt" target="_blank">Быстрое решение без дека</a></td>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/gym/100962/problem/F" target="_blank">CF gym 100962 F</a></td>
+					<td><ul>
+						<li>Используйте алгоритм МО на дереве.</li>
+						<li>
+							Что делать если веса расположены на ребрах а не на вершинах? Есть несколько способов, один из них: пусть вес вершины - вес ее родительского ребра. Тогда решение переносится на вершины. <em>В моем коде сделано немного по-другому: я записал эйлеров обход ребрами, и как-то определил границы.</em>.
+						</li>
+						<li><pre>
+Let weight[i] -> the weight of node i, in this case consider weight[i] = weight of my father edge.
+You can split in two cases:
+	1 - If LCA(u, v) = u, you need to consider the range [st[u], st[v]] and remove weight[u].
+	2 - Otherwise, you need to consider the range [en[u], st[v]].
+						</pre></li>
+						<li>
+							Чтобы считать MEX используйте самую классическую корневую декомпозицию. Split the numbers in sqrt(blocks) and compute the query answer in O(sqrt(n)).
+						</li>
+						<li>Примерная асимптотика n*sqrt </li>
+					</ul></td>
+					<td><a href="../Solutions/CF_100962_F_my.txt" target="_blank">My solution</a><br><br>
+						<a href="../Solutions/CF_100962_F_Ayalla.txt" target="_blank">*Ayalla* solution</a></td>
+				</tr>
+				<tr>
+					<td><a href="https://www.codechef.com/problems/CLOSEFAR" target="_blank">CodeChef CLOSEFAR</a></td>
+					<td><ul>
+						<li>Используйте МО на дереве и читайте разбор.</li>
+					</ul></td>
+					<td><a href="../Solutions/CodeChef_CLOSEFAR.txt" target="_blank">My solution</a></td>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/contest/940/problem/F" target="_blank">CF_940 _F</a></td>
+					<td><ul>
+						<li>Используйте 3D Mo и читайте разбор.</li>
+					</ul></td>
+					<td><a href="../Solutions/CF_940_F.txt" target="_blank">My solution</a></td>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/blog/entry/81716" target="_blank">Еще больше задач</a></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+
+		</div>
+	</div>
+
+
+
+    <footer></footer>
+</body>
+</html>

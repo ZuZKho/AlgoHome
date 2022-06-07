@@ -1,0 +1,97 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+struct elem{
+	int l, r, idx;
+};
+
+int bsz = 530;
+bool cmp(elem &a,elem &b) {
+	if (a.l/bsz == b.l/bsz) return a.r < b.r;
+	return a.l < b.l;
+}
+
+const int MAXC = 1e6 + 6;
+
+vector<int> a;
+int cnt[MAXC];
+long long answer = 0;
+int L = 0, R = 0;
+
+void moveLeftL() {
+	int nw = a[L-1];
+	answer -= cnt[nw]*1ll*cnt[nw]*nw;
+	cnt[nw]++; L--;
+	answer += cnt[nw]*1ll*cnt[nw]*nw;
+}
+
+void moveRightL() {
+	int cur = a[L];
+	answer -= cnt[cur]*1ll*cnt[cur]*cur;
+	cnt[cur]--; L++;
+	answer += cnt[cur]*1ll*cnt[cur]*cur;
+}
+
+void moveLeftR() {
+	int cur = a[R-1];
+	answer -= cnt[cur]*1ll*cnt[cur]*cur;
+	cnt[cur]--; R--;
+	answer += cnt[cur]*1ll*cnt[cur]*cur;
+}
+
+void moveRightR() {
+	int nw = a[R];
+	answer -= cnt[nw]*1ll*cnt[nw]*nw;
+	cnt[nw]++; R++;
+	answer += cnt[nw]*1ll*cnt[nw]*nw;
+}
+
+int main() {
+
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n,t;
+	cin>>n>>t;
+	a.resize(n);
+	for(int i=0;i<n;i++) cin>>a[i];
+
+
+	vector<elem> blocks(t);
+	for(int i=0;i<t;i++) {
+		int l,r;
+		cin>>l>>r;
+		blocks[i]={l-1,r,i};
+	}
+
+	sort(blocks.begin(),blocks.end(),cmp);
+
+	vector<long long> answers(t);
+
+		for(int j=0;j<t;j++) {
+			int l = blocks[j].l, r = blocks[j].r, idx = blocks[j].idx;
+			while(R<r) {
+				moveRightR();
+			}
+			while(L>l) {
+				moveLeftL();
+			}
+			while(L<l) {
+				moveRightL();
+			}
+			while(R>r) {
+				moveLeftR();
+			}
+			answers[idx] = answer;
+		}
+
+
+	for(int i=0;i<t;i++) {
+		cout<<answers[i]<<'\n';
+	}
+
+
+	return 0;
+}
