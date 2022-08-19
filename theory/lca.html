@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>LCA</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Наименьший общий предок (LCA)</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+
+	<div class="summary_block">
+		<div class="main_content">
+			<p>Это основной алгоритм на деревьях. Дерево - связный граф без циклов и петель. При <em>n</em> вершинах оно содержит <em>n-1</em> ребро.</p>
+
+            <p>Есть два основных способа поиска LCA.</p>
+            <h2>Метод двоичных подъемов.</h2>
+            <p>Предподсчет за <em>nlogn</em>, запрос за <em>logn</em>. Можно насчитывать функции на пути.</p>
+            <p>Статьи погуглите сами, почитайте в нескольких источниках. Прикладываю мой код ниже.</p>
+            <pre><code>int binup[200001][20], h[200001], par[200001];
+
+int lca(int a,int b) {
+    if (h[a]&lt;h[b]) swap(a,b);
+    for(int i=log2(n);i&gt;=0;i--) {
+        if (h[a]-h[b] &gt;= (1&lt;&lt;i)) a=binup[a][i];
+    }
+    if (a==b) return a;
+    for(int i=log2(n);i&gt;=0;i--) {
+        if (binup[a][i]!=binup[b][i]) {
+            a=binup[a][i];
+            b=binup[b][i];
+        }
+    }
+    return par[a];
+}
+
+int main() {
+    // Вводим все что надо
+    // Заполняем массив предков par и массив высот h с помощью dfs&#x60;а
+
+    for(int i=1;i&lt;=n;i++) {
+        binup[i][0]=par[i];
+    }
+    for(int l=1;l&lt;=log2(n)+1;l++) {
+        for(int v=1;v&lt;=n;v++) {
+            binup[v][l]=binup[binup[v][l-1]][l-1];
+        }
+    }
+
+    // Отвечаем на запросы
+    return 0;
+}</code></pre>
+            <h2>Спарсы + эйлеров обход.</h2>
+            <p>Предподсчет за <em>nlogn</em>, запрос за <em>1</em>.</p>
+            <a href="https://ru.algorithmica.org/cs/trees/lca-rmq/" target = "_blank">Алгоритмика</a>.
+		</div>
+	</div>
+
+	<div class="problems_block">
+		<div class="main_content">
+			<table>
+				<col width="20%">
+   				<col width="65%">
+				<col width="15%">
+				<tr>
+					<th>Задача</th>
+					<th>Примечание/Подсказки</th>
+					<th>Решение</th>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/group/TMC0JYOuJE/contest/287822" target="_blank">Контест сириуса</a></td>
+					<td><ul>
+						<li>Задача чип и дейл и простые LCA есть также на информатиксе. </li>
+					</ul></td>
+					<td></td>
+				</tr>
+                <tr>
+                    <td><a href="https://informatics.msk.ru/mod/statements/view.php?chapterid=111796#1" target="_blank">Informatics 111796</a></td>
+                    <td><ul>
+                        <li>Самое простое LCA</li>
+                    </ul></td>
+                    <td></td>
+                </tr>
+			</table>
+
+		</div>
+	</div>
+
+
+
+    <footer></footer>
+</body>
+</html>

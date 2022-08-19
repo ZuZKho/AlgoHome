@@ -1,0 +1,78 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int MAXN = 1e5 + 5;
+const long long INF = 1e18;
+
+struct edge{
+	int to;
+	long long w;
+	int is;
+};
+
+const long long SECRET = -8363;
+vector<edge> g[MAXN];
+vector<pair<long long,long long> > times;
+vector<long long> dist(MAXN,-INF);
+int pos = 0;
+
+long long find_time(long long t0) {
+	while(pos<times.size() && t0>times[pos].second) {
+		pos++;
+	}
+	if (pos==times.size()) return SECRET;
+	return max(times[pos].first,t0);
+}
+
+void super_dijkstra(int start,long long t0) {
+	dist[start] = t0;
+	set<pair<long long,int> > st;
+	st.insert({dist[start],start});
+	while(!st.empty()) {
+		int v = (*st.begin()).second;
+		st.erase(st.begin());
+		for(int i=0;i<g[v].size();i++) {
+			int to = g[v][i].to; long long len = g[v][i].w;
+			if (g[v][i].is==1) {
+				long long ft = find_time(dist[v]);
+				if (ft==SECRET) continue;
+				len = find_time(dist[v]) - dist[v] + len;
+			}
+			if (dist[to]==-INF || dist[to] > dist[v] + len) {
+				st.erase({dist[to],to});
+				dist[to] = dist[v] + len;
+				st.insert({dist[to],to});
+			}
+		}
+	}
+}
+
+int main() {
+
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+
+	int n,m,k;
+	cin>>n>>m>>k;
+	for(int i=0;i<m;i++) {
+		int a,b,w,is;
+		cin>>a>>b>>w>>is;
+		g[a].push_back({b,w,is});
+		g[b].push_back({a,w,is});
+	}
+	times.resize(k);
+	for(int i=0;i<k;i++) {
+		cin>>times[i].first>>times[i].second;
+	}
+
+	int u,v;
+	long long t0;
+	cin>>u>>v>>t0;
+	super_dijkstra(u,t0);
+	if (dist[v]==-INF) cout<<-1<<endl; else
+	cout<<dist[v] - t0;
+
+	return 0;
+}

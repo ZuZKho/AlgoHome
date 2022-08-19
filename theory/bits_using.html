@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>Битовое представление чисел</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Битовое представление чисел</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+	<div class="main_content">
+		<p>Необходимо знать как организованы побитовые операции: &,|,<<,>>, ^. </p>
+		<p>Знать как использовать битсеты, в том числе в задачах похожих на рюкзак.
+			<a href="https://ru.algorithmica.org/cs/arithmetic/bit-representation/" target="_blank">Пост на алгоритмике 1.</a>
+			<a href="https://ru.algorithmica.org/cs/set-structures/bitset/" target="_blank">Пост на алгоритмике 2.</a>
+			</p>
+		<p>Знать что маска - просто напросто интовое число. !!! </p>
+		<p>Уметь перебирать подмаски и надмаски данной маски.</p>
+		<pre><code>for(int submask = mask; ; submask = (submask - 1) &amp; mask) {
+         // do something
+        if(submask == 0) break;
+}</code></pre>
+
+	<p>Два видео на английском языке от Errichto: <a href="https://www.youtube.com/watch?v=xXKL9YBWgCY&list=PLl0KD3g-oDOHpWRyyGBUJ9jmul0lUOD80&index=3">Video 1</a>, <a href="https://www.youtube.com/watch?v=jqJ5s077OKo&list=PLl0KD3g-oDOHpWRyyGBUJ9jmul0lUOD80&index=2" target="_blank">Video 2</a>. Также в описании к видео вы найдете ссылки на письменные версии. Возможно они будут проще для понимания, т.к. их можно перевести гугл переводчиком. Не смотря на то что все на английском языке, я советую ознакомиться с материалом.</p>
+
+	</div>
+    <div class="main_content">
+		<table>
+			<col width="20%">
+			<col width="65%">
+			<col width="15%">
+			<tr>
+				<th>Задача</th>
+				<th>Примечание/Подсказки</th>
+				<th>Решение</th>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/contest/1543/problem/D1" target="_blank">CF 1543D1</a></td>
+				<td></td>
+				<td>Мое решение на КФ'е</td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/gym/102552/problem/C" target="_blank">Зеленый сайт</a></td>
+				<td></td>
+				<td></td>
+			</tr>
+
+		</table>
+    </div>
+	<div class="main_content">
+		<p>Других задач к сожалению не нашел, однако данная тема широко применяется в в дп по подмаскам. Можно брать задачи оттуда.</p>
+		<p>Так же используются в битовом боре.</p>
+	</div>
+
+    <footer></footer>
+</body>
+</html>

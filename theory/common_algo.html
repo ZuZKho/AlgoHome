@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>Общие алгоритмы</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Общие алгоритмы</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+	<div class="main_content">
+		<p>Убедитесь что вы знаете все, что будет перечисленно далее. Если это не так изучите в самом срочном порядке. Гуглите, ищите, кф'те.</p>
+		<p>Приоритетная очередь, сеты, мультисеты, map'ы, все это с приставкой unordered (unordered_set и т.д.). (работа с итераторами!!, upper_bound и lower_bound).</p>
+		<p>Заостряю внимание, что если вы используете upb или lwb в сете, мст или мп вы пишите: st.upper_bound(). Если сделаете как в массивах время скорее всего превратится в линейное.</p>
+		<p>В массиве же upper_bound(a.begin(),a.end(),x).</p><br>
+
+		<p>Для сортировки векторов по "своим правилам" существуют компараторы. В начале их написание может вызвать много вопросов, но со временем все станет понятно. Стоить запомнить одно правило. <b>Компаратор возвращает то, как должно быть в итоге.</b> Объясню. <em>Допустим, есть вектор структур и нужно отсортировать его по убыванию третьего элемента.</em></p>
+		<pre><code>struct st{
+	int first, second, third;
+};
+
+bool cmp(st &amp;a, st &amp;b) { // не забывайте ссылки!!
+	return a.third &gt; b.third;
+}
+
+int main(){
+	vector&lt;st&gt; v;
+	sort(v.begin(),v.end(),cmp);
+}
+</code></pre>
+		<p>Так как требуется отсортировать по убыванию третьего элемента, то чем раньше элемент в массиве, тем он должен быть больше. Соответственно a.third > b.third.</p>
+		<p><b>Стоит также узнать про кастомные правила сортировок сетов, мэпов, мультисетов и т.д.</b> В случае если вы их не знаете, иногда сможет помочь использование элементов со знаком "-". Таким образом сортируя по возрастанию сет расположит примерно таким образом -5 -2 -1. И убирая минус при обработке вы получите последовательность 5 2 1. Лушче конечно узнать как писать кастомные правила сортировки.</p>
+		<h2>Префиксные суммы</h2>
+		<p style="font-size: 1.1em;">Есть курс на КФ'е</p>
+
+
+		<h2>Быстрый ввод\вывод, интерактивные задачи</h2>
+		<pre><code>ios_base::sync_with_stdio(false);
+cin.tie(0);
+cout.tie(0);</code></pre>
+		<p>Это быстрый ввод\вывод, его можно писать абсолютно во всех задачах, при больших вводах или выводах он значительно уменьшит время выполнения задачи.</p>
+		<p>Используйте \n вместо endl, это также значительно уменьшает время выполнения программы.</p>
+		<p>Использование двух этих моментов может ускорить вашу задачу до 10 раз.</p><br>
+
+		<p>Что касается интерактивных задач, то часто в условиях пишут про какой то fflush(). Лично я никогда его не использовал, потому что в интерактивных задачах пишу endl, вместо \n. Суть в том, что endl уже содержит в себе fflush(). Поэтому fflush() нужен только при \n. При этом в обоих случаях совершенно спокойно можно использовать быстрый ввод\вывод.</p>
+
+
+		<h2>Сжатие координат</h2>
+		<p>Это очень популярный момент во многих задачах, в основном он применяется в случаях когда значения данных чисел от 1 до 1e9, но мы хотели бы хранить информацию о каждом в ячейке массива. Идея: каждому различному входному числу сопоставим какое то другое число(так что все сопоставленные тоже будут различными), желательно чтобы оно было как можно меньше.</p>
+
+		<a href="https://informatics.msk.ru/mod/book/view.php?id=491&chapterid=197" target="_blank">Объяснение на примере задачи</a>
+        <br><a href="https://ru.algorithmica.org/cs/sequences/compression/" target="_blank">Алгоритмика</a>
+
+		<pre><code>vector&lt;int&gt; a(n);
+sort(a.begin(),a.end());
+
+map&lt;int,int&gt; mp; // mp[i] - показывает наш новый индекс для числа i
+vector&lt;int&gt; backmp;  // backmp[i] - по новому индексу возвращает исходное число
+for(int i=0;i&lt;int(a.size());i++) {
+	if (i==0 || a[i]!=a[i-1]) {
+		mp[a[i]] = mp.size();
+		backmp.push_back(a[i]);
+	}
+}</code></pre>
+<p>За место map иногда возможно использовать unordered_map, но если автор тестов захочет завалить анордред - он это сделает.</p>
+<p>Часто используется вместе с другими структурами данных: ДО, Фенвик и тд.</p>
+<p>Стоит понять как это работает, потому что используется повсеместно как вспомогательная часть задачи, без которой она пройдет не на все тесты. Этим любят усложнять задачи в олимпиадах, где есть частичные баллы. </p>
+		<h2>Использование стека</h2>
+		<p>Позволяет делать ровно то, что описывает задача D.</p>
+		<p style="font-size: 1.1em;">Пример на задаче D из списка задач:</p>
+		<img src="../assets/common_algo/Problem_D.JPG" style="width: 60%;"></img>
+	</div>
+    <div class="main_content">
+		<table>
+			<col width="20%">
+			<col width="65%">
+			<col width="15%">
+			<tr>
+				<th>Задача</th>
+				<th>Примечание/Подсказки</th>
+				<th>Решение</th>
+			</tr>
+			<tr>
+				<td>Всесиб Финал 15-16 А</td>
+				<td><ul>
+					<li>Сжатие координат и ДО с присвоением</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://informatics.msk.ru/mod/statements/view.php?chapterid=1255#1" target="_blank">Informatics №1255</a></td>
+				<td><ul>
+					<li>Сжатие координат и двумерный префсуммы на прибавление в оффлайне</li>
+				</ul></td>
+				<td><a href="../Solutions/Informatics_1255.txt" target="_blank">My solution</a></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/contest/1700/problem/C" target="_blank">CF 1700C</a></td>
+				<td><ul>
+					<li>Задача на разностный массив</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/gym/101609/attachments" target="_blank">Задача D</a></td>
+				<td><ul>
+					<li>Использование стека</li>
+				</ul></td>
+				<td><a href="../Solutions/CF_101609_D.txt" target="_blank">My solution</a></td>
+			</tr>
+		</table>
+    </div>
+
+    <footer></footer>
+</body>
+</html>

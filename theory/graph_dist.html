@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>Расстояния в графах</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Расстояния в графах</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+
+	<div class="summary_block">
+		<div class="main_content">
+			<p><em>Здесь не будет ссылок на сторонние конспекты, ищите их сами.</em></p>
+			<h2>Алгоритм Флойда.</h2>
+			<p>Самый простой алгоритм на нахождение кратчайшего пути. Работает за куб, но при этом находит кратчайшие расстояния между каждой парой вершин, в отличии от других алгоритмов.</p>
+			<p>Осторожно при реализации, лично я всегда путаю и ставлю третий цикл не туда.</p>
+			<h2>Алгоиртм Дейкстры.</h2>
+			<p>Самый главный и популярный алгоритм в данной теме. Есть две вариации за <em>n^2</em> и <em>nlogn</em>. Для обучения стоит написать вначале первую, а уже потом перейти на вторую.</p>
+			<p>Второй вариант также можно писать несколькими способами. Через сет или приоритетную очередь. Вроде через очередь лучше, но я ее не знаю, и всегда пишу через сет. На всякий случай прилагаю свой код:</p>
+			<pre><code>// Массив v - список смежности в виде пары {вершина,стоимость}
+// Массив дист изначально должен быть заполнен +бесконечностями.
+
+void dijkstra(int s,vector&lt;int&gt; &amp;dist) {
+	dist[s]=0;
+	set&lt;pair&lt;int,int&gt; &gt; q;
+	q.insert({0,s});
+	while(!q.empty()) {
+		int cur=q.begin()-&gt;second;
+		q.erase(q.begin());
+		for(int i=0;i&lt;v[cur].size();i++) {
+			int to = v[cur][i].first, len = v[cur][i].second;
+			if (dist[cur]+len &lt; dist[to]) {
+				q.erase({dist[to],to});
+				dist[to] = dist[cur]+len;
+				q.insert({dist[to],to});
+			}
+		}
+	}
+}
+
+</code></pre>
+			<h2>Алгоритм Форда-Белламана.</h2>
+			<p>Данный алгоритм нужен в случае наличия отрицательных весов ребер в графе.</p>
+			<h2>Shortest Path Faster Algorithm. SPFA.</h2>
+			<p>Малоизвестный алгоритм. Насколько я понимаю, хорошо работает в случайных графах, но возможно придумать контртесты.</p>
+			<p>Можно изучить про него для общего развития.</p>
+
+		</div>
+	</div>
+
+	<div class="problems_block">
+		<div class="main_content">
+			<table>
+				<col width="20%">
+   				<col width="65%">
+				<col width="15%">
+				<tr>
+					<th>Задача</th>
+					<th>Примечание/Подсказки</th>
+					<th>Решение</th>
+				</tr>
+				<tr>
+					<td><a href="https://informatics.msk.ru/course/view.php?id=6" target="_blank">Informatics</a></td>
+					<td><ul>
+						<li>Для изначальных тренировок стоит поискать задачи на Informatics, в разделах про графы.</li>
+					</ul></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/problemset/problem/416/E?locale=ru" target="_blank">CF 416E</a></td>
+					<td><ul>
+						<li>Задача на Флойда на КФ, вот это да!</li>
+					</ul></td>
+					<td></td>
+				</tr>
+
+				<tr>
+					<td><a href="https://codeforces.com/gym/103458/problem/A" target="_blank">Зеленый сайт</a></td>
+					<td><ul>
+						<li>На дейкстру.</li>
+					</ul></td>
+					<td><a href="../Solutions/103458A.txt" target="_blank">My Solution</a></td>
+				</tr>
+			</table>
+
+		</div>
+	</div>
+
+
+
+    <footer></footer>
+</body>
+</html>

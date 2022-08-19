@@ -1,0 +1,97 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+struct Node{
+	map<char,int> mp;
+	bool is;
+	bool term;
+};
+
+const int MAXC = 1000005;
+Node b[1000005];
+int pos = 1;
+int p = 929, MOD = 1e9 + 7;
+vector<int> h(MAXC),bh(MAXC),pp(MAXC);
+
+
+void build(string &s) {
+	h[0] = 	s[0];
+	pp[0] = 1;
+	for(int i=1;i<s.size();i++) {
+		h[i] = (h[i-1]*1ll*p + s[i]) %MOD;
+		pp[i] = (pp[i-1]*1ll*p) %MOD;
+	}
+	int n = s.size();
+	bh[n-1] = s[n-1];
+	for(int i=n-2;i>=0;i--) {
+		bh[i] = (bh[i+1]*1ll*p + s[i]) %MOD;
+	}
+	return;
+}
+
+bool is_pal(int l,int r,int n) {
+    if (l>=r) return 1;
+	int hash, bhash;
+	if (l==0) hash = h[r]; else hash = (h[r] - h[l - 1]*1ll*pp[r - l + 1]) %MOD;
+	if (hash < 0) hash+=MOD;
+	if (r==n-1) bhash = bh[l]; else bhash = (bh[l] - bh[r+1]*1ll*pp[r-l+1]) %MOD;
+	if (bhash<0) bhash+=MOD;
+	return hash==bhash;
+}
+
+void Add(string s) {
+	reverse(s.begin(),s.end());
+	build(s);
+	int v = 0;
+	for(int i=0;i<s.size();i++) {
+		if (b[v].mp.find(s[i])==b[v].mp.end()) {
+			b[v].mp[s[i]] = pos++;
+		}
+		v = b[v].mp[s[i]];
+		if (is_pal(i+1,s.size()-1,s.size())) b[v].is = 1;
+	}
+	b[v].term = 1;
+}
+
+bool Try(string &s) {
+    int n = s.size();
+    int v = 0;
+    for(int i=0;i<s.size();i++) {
+        if (b[v].term) {
+            if (is_pal(i,n-1,n)) return 1;
+        }
+        if (b[v].mp.find(s[i])==b[v].mp.end()) {
+            return 0;
+        }
+        v = b[v].mp[s[i]];
+    }
+    return b[v].is;
+}
+
+int main() {
+
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+	int n,m;
+	cin>>n>>m;
+	string s;
+	for(int i=0;i<n;i++) {
+		cin>>s;
+		Add(s);
+	}
+
+	//Print();
+
+
+	for(int i=0;i<m;i++) {
+        cin>>s;
+        build(s);
+        bool ans = Try(s);
+        if (ans) cout<<"YES"<<'\n'; else cout<<"NO"<<'\n';
+	}
+
+	return 0;
+}

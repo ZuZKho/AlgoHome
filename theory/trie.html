@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>Бор</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Бор (Trie)</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+
+	<div class="summary_block">
+		<div class="main_content">
+            <p>Бор - строковый алгоритм, который позволяет поддерживать множество строк и делать с ним различные операции: добавление, удаление, подсчет количества каждой строки, выдавать лексикографически все строки за их суммарную длину.</p>
+			<a href="https://wiki.algocode.ru/index.php?title=%D0%91%D0%BE%D1%80" target="_blank">AlgoCode</a><br> Здесь бор написан через ссылки, что совершенно не обязательно. Можно хранить все вершины в массиве структур.
+			<pre><code>struct trie {
+
+    struct Node{
+        int go[26] = {0,};
+        int cnt = 0;
+        bool flag = 0;
+    };
+
+    Node nodes[100500];
+    int tsz = 1;
+
+    void Add(string &amp;s) {
+        int v = 0;
+        for(int i=0;i&lt;s.size();i++) {
+            if (nodes[v].go[s[i] - 'a']==0) {
+                nodes[v].go[s[i] - 'a'] = tsz++;
+            }
+            v = nodes[v].go[s[i] - 'a'];
+            nodes[v].cnt++;
+        }
+        nodes[v].flag = 1;
+    }
+
+    void Kth(int v,int k) {
+        if (k&lt;=0) return;
+        if (nodes[v].flag == 1) k--;
+        if (k&lt;=0) return;
+
+        for(int i=0;i&lt;26;i++) {
+            if (nodes[nodes[v].go[i]].cnt&gt;=k) {
+                out.push_back(i+'a');
+                Kth(nodes[v].go[i],k);
+                break;
+            } else k-=nodes[nodes[v].go[i]].cnt;
+        }
+
+    }
+
+};</code></pre>
+
+		<h2>Битовый бор</h2>
+		<p>Это проецирование случая со строками на обычные числа, если представить их в битовой записи. То есть каждое (например интовое) число превращается в строку из 32 нулей и единиц, по которым мы строим бор.</p>
+		<p>Это позволяет добавить к множеству интовых чисел интересные функции связанные с битовыми операциями. К примеру <em>Найти число в множестве, у которого xor c x максимален</em>. Это лишь одно из многих применений, возможны задачи с <em>and</em> или <em>or</em>, но все-таки <em>xor</em> встречается чаще.</p>
+		<a href="https://wiki.algocode.ru/index.php?title=%D0%A6%D0%B8%D1%84%D1%80%D0%BE%D0%B2%D0%BE%D0%B9_%D0%B1%D0%BE%D1%80" target="_blank">AlgoCode</a>
+		</div>
+	</div>
+
+	<div class="problems_block">
+		<div class="main_content">
+			<table>
+				<col width="20%">
+   				<col width="65%">
+				<col width="15%">
+				<tr>
+					<th>Задача</th>
+					<th>Примечание/Подсказки</th>
+					<th>Решение</th>
+				</tr>
+				<tr>
+					<td></td>
+					<td><ul>
+						<li>Не нашел в своих записях задачи на строковый бор. Они точно имеются в большом количестве в Школах, так же видел большой ассортимент на UsacoGuide по тегу Trie.</li>
+
+					</ul></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/gym/103458/problem/I" target="_blank">Командная тренировочная</a></td>
+					<td><ul>
+						<li>Разборы на зеленом сайте. Строковый бор + Хеши.</li>
+					</ul></td>
+					<td><a href="../Solutions/Team_train_21-22_3I.txt" target="_blank">Team_train_21-22_3I.txt</a></td>
+				</tr>
+
+				<tr>
+					<td><a href="https://codeforces.com/gym/102552/problem/D" target="_blank">Зеленый сайт</a></td>
+					<td><ul>
+						<li>Разборы на зеленом сайте.</li>
+					</ul></td>
+					<td><a href="../Solutions/Team_train_21-22_3I.txt" target="_blank">Team_train_21-22_3I.txt</a></td>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/problemset/problem/706/D" target="_blank">CF 706D</a></td>
+					<td><ul>
+						<li>Самое классическое применение битового бора.</li>
+					</ul></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/contest/842/problem/D?locale=ru" target="_blank">CF 842D</a></td>
+					<td><ul>
+						<li>Битовый бор.</li>
+					</ul></td>
+					<td></td>
+				</tr>
+
+			</table>
+
+		</div>
+	</div>
+
+
+
+    <footer></footer>
+</body>
+</html>

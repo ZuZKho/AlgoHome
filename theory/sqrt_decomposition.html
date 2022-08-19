@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>Корневая декомпозиция</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Корневая декомпозиция</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+
+	<div class="summary_block">
+		<div class="main_content">
+			<p><em>Это один из самых важных алгоритмов, наряду с деревом отрезков. Логическим продолжением данной темы является алгоритм МО, который я вынес в отдельную тему.</em></p>
+			<p>Данная тема очень большая, поэтому есть очень много разных конспектов. Стоит прочитать их все, потому что в каждом может быть что-то особенное. Наверно стоит даже поискать и посмотреть видео. <a href="https://www.youtube.com/watch?v=2tefaNBQfB40" target="_blank">Вот например одно из них</a>, <a href="https://www.youtube.com/watch?v=0IUhudKbx34" target="_blank">а вот второе</a>.</p>
+			<p>Так же я уверен, что есть много постов на кф, ищите их сами. В том числе на английском.</p>
+			<p><a href="https://algorithmica.org/ru/sqrt" target="_blank">Algorithmica 1</a>, <a href="https://ru.algorithmica.org/cs/decomposition/sqrt-heuristics/" target="_blank">Algorithmica 2</a>, <a href="https://e-maxx.ru/algo/sqrt_decomposition">Emaxx</a>,
+			<a href="https://wiki.algocode.ru/index.php?title=%D0%A1%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B_%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85#.D0.9A.D0.BE.D1.80.D0.BD.D0.B5.D0.B2.D1.8B.D0.B5_.D0.BE.D0.BF.D1.82.D0.B8.D0.BC.D0.B8.D0.B7.D0.B0.D1.86.D0.B8.D0.B8" target="_blank">AlgoCode</a> - смотри раздел корневые оптимизации, не очень подробный, но самый полный конспект по всем подвидам.</p>
+			<h2>Корневая декомпозиция на массиве</h2>
+			<p>Просто считает какие-то функции (это только одно из применений). Работает дольше, чем дерево отрезков, но иногда может больше. Если не можете написать ДО, пишите её.</p>
+			<h2>Корневая декомпозиция по запросам</h2>
+			<p>Не смотря на название идея может применяться не только там где есть запросы. Лично я провожу аналогию, что в корневой на массиве мы делим "горизонтально", а здесь "вертикально".</p>
+			<h2>Heavy/Light корневая декомпозиция</h2>
+			<p>Обычно применяется на графах. Идея: одни вершины будут тяжелые, одни легкие. В зависимости от этого обращаемся с ними по разному. Классическая задача на это - найти количество треугольников (циклов длины 3) в графе.</p>
+			<a href="https://wiki.algocode.ru/index.php?title=%D0%9A%D0%BE%D1%80%D0%BD%D0%B5%D0%B2%D0%B0%D1%8F_%D0%B2_%D0%B7%D0%B0%D0%B4%D0%B0%D1%87%D0%B0%D1%85_%D0%BD%D0%B0_%D0%B3%D1%80%D0%B0%D1%84%D1%8B" target="_blank">AlgoCode</a>.
+			<h2>Split/Rebuild/Merge корневая декомпозиция</h2>
+			<p>Работает на массиве. Позволяет вставлять и удалять элмемнты из массива. Есть два способа Split/Rebuild и Split/Merge. Я думаю её можно потренировать в задачах на Декартово Дерево по неявному ключу. Очень схожий функционал.</p>
+			<a href="https://neerc.ifmo.ru/wiki/index.php?title=%D0%9A%D0%BE%D1%80%D0%BD%D0%B5%D0%B2%D0%B0%D1%8F_%D0%B4%D0%B5%D0%BA%D0%BE%D0%BC%D0%BF%D0%BE%D0%B7%D0%B8%D1%86%D0%B8%D1%8F_%D1%81_%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F%D0%BC%D0%B8:_get,_insert,_erase" target="_blank">Itmo</a>.
+			<p>При реализации стоит быть аккуратнее при работе с памятью. Меньше clear, push back, vector::insert,vector::erase и так далее. Имитируйте векторы самостоятельно, создавая массив и счетчик на последний элемент в этом массиве. Это очень важно!!!</p>
+		</div>
+	</div>
+
+    <div class="main_content">
+		<table>
+			<col width="20%">
+			<col width="65%">
+			<col width="15%">
+			<tr>
+				<th>Задача</th>
+				<th>Примечание/Подсказки</th>
+				<th>Решение</th>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/group/TMC0JYOuJE/contest/287548" target="_blank">Сириус лето 20</a></td>
+				<td><ul>
+					<li>Контест на корневую декомпозицию</li>
+					<li>Многие задачи просто взяты с кф, можете копировать условие и вставлять в строку поиска. Если повезет выйдет оригинальная кф задача в которой есть разбор.</li>
+					<li><b>Задача Сычи обязательна к решению</b>, эта задача на треугольнике в графе, которая решается делением на тяжелые и легкие.</li>
+					<li>Если мне не изменяет память, задача G когда то была на Респе. Смотря сходу, думаю можно решить heavy/light корневой, или делением на запросы. Не проверял.</li>
+				</ul></td>
+				<td></td>
+			</tr>
+
+			<tr>
+				<td><a href="https://acmp.ru/asp/do/index.asp?main=topic&id_course=2&id_section=20&id_topic=45" target="_blank">ACMP contest</a></td>
+				<td><ul>
+					<li>Насколько я знаю разбор некоторых задач есть на канале "3.5 задачи в неделю". Смотрите архив.</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/contest/13/problem/E" target="_blank">CF 13Е</a></td>
+				<td><ul>
+					<li>Интересная корневая на массиве</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/problemset/problem/342/E" target="_blank">CF 342Е</a></td>
+				<td><ul>
+					<li>Корневая по запросам</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/contest/348/problem/C" target="_blank">CF 348C</a></td>
+				<td><ul>
+					<li>Heavy/light sqrt decomp</li>
+				</ul></td>
+				<td></td>
+			</tr>
+
+			<tr>
+				<td><a href="https://codeforces.com/contest/455/problem/D" target="_blank">CF 455D</a></td>
+				<td><ul>
+					<li>Отличная задача на сплит-ребилд</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/group/Uo1lq8ZyWf/contest/219055" target="_blank">Жаута 18 1B</a></td>
+				<td><ul>
+					<li>Решение к этой задаче придумал лично я, возможно оно усложненное и неоптимальное.</li>
+					<li>Что-то типо корневой по запросам, но это не совсем так.</li>
+					<li>Также использована дейкстра, и СНМ, который выполняет функцию очень похожую на алгоритм краскала.</li>
+				</ul></td>
+				<td><a href="../Solutions/Zhauta_18_1B.txt" target="_blank">My_solution.txt</a></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/group/Uo1lq8ZyWf/contest/265827" target="_blank">Жаута 20 2C</a></td>
+				<td><ul>
+					<li>Сложная задача, но на удивление есть разбор. Я писал МО, но не шло по времени.</li>
+					<li>https://codeforces.com/blog/entry/73433 - полезный пост, внимательно смотрите все ссылки. Там есть решения ко всем задачам.</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/contest/1017/problem/G" target="_blank">CF 1017G</a></td>
+				<td><ul>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><ul>
+					<li>Задач на эту тему очень много, даже на кф. Гуглите по постам.</li>
+					<li>Также задачи на эту тему есть почти в каждой школе.</li>
+					<li>Можно искать тематические контесты типа сириуса.</li>
+				</ul></td>
+				<td></td>
+			</tr>
+		</table>
+    </div>
+
+    <footer></footer>
+</body>
+</html>

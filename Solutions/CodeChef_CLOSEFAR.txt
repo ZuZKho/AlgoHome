@@ -1,0 +1,219 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+struct query{
+    char type;
+    int idx,l,r,lc;
+};
+
+const int MAXN = 35005;
+int bsz = 200;
+
+vector<int> h(MAXN);
+vector<int> g[MAXN];
+vector<int> tour;
+vector<int> tin(MAXN),tout(MAXN);
+vector<int> backmp(MAXN);
+vector<int> cnt(MAXN,0);
+int binup[MAXN][20];
+int timer = 0;
+
+void dfs(int v,int p) {
+    tour.push_back(v);
+    tin[v] = timer++;
+    if (p!=-1) h[v] = h[p] + 1;
+    binup[v][0] = p;
+    for(int i=0;i<g[v].size();i++) {
+        int to = g[v][i];
+        if (to==p) continue;
+        dfs(to,v);
+    }
+    tout[v] = timer++;
+    tour.push_back(v);
+}
+
+bool cmp(query &a, query &b) {
+    if (a.l/bsz==b.l/bsz) return a.r<b.r; else return a.l/bsz<b.l/bsz;
+}
+
+int lca(int a,int b) {
+    if (h[a]<h[b]) swap(a,b);
+    for(int i=19;i>=0;i--) {
+        if (h[a]-(1<<i)>=h[b]) a = binup[a][i];
+    }
+    if (a==b) return a;
+    for(int i=19;i>=0;i--) {
+        if (binup[a][i]!=binup[b][i]) {
+            a = binup[a][i];
+            b = binup[b][i];
+        }
+    }
+    return binup[a][0];
+}
+
+struct SegTree{
+
+    struct Node{
+        int ans, mn, mx;
+    };
+
+    int sz = 1;
+    vector<Node> tree;
+
+    void Init(int n) {
+        while(sz<n) sz*=2;
+        tree.assign(sz*2,{-1,-1,-1});
+    }
+
+    Node combine(Node &a,Node &b) {
+        int nwans = 1e9;
+        if (a.ans!=-1) nwans = min(nwans,a.ans);
+        if (b.ans!=-1) nwans = min(nwans,b.ans);
+        if (a.mx!=b.mn && a.mx!=-1 && b.mn!=-1) nwans = min(nwans,b.mn-a.mx);
+        if (nwans==1e9) nwans = -1;
+        int nwmn = -1;
+        if (a.mn!=-1) nwmn = a.mn; else
+            if (b.mn!=-1) nwmn = b.mn;
+        int nwmx = -1;
+        if (b.mx!=-1) nwmx = b.mx; else
+            if (a.mx!=-1) nwmx = a.mx;
+        return {nwans,nwmn,nwmx};
+     }
+
+    void set(int v,int tl,int tr,int pos,int val) {
+        if (tr-tl==1) {
+            if (val==1) {
+                tree[v] = {-1,backmp[pos],backmp[pos]};
+            } else {
+                tree[v] = {-1,-1,-1};
+            }
+            return;
+        }
+        int m = (tl + tr) / 2;
+        if (pos<m) set(v*2+1,tl,m,pos,val); else set(v*2+2,m,tr,pos,val);
+        tree[v] = combine(tree[v*2+1],tree[v*2+2]);
+    }
+
+    void Set(int pos,int val) {
+        set(0,0,sz,pos,val);
+    }
+};
+
+SegTree tree;
+
+void Add(int a) {
+    if (cnt[a]==1) {
+        tree.Set(a,0);
+    } else {
+        tree.Set(a,1);
+    }
+    cnt[a]++;
+}
+
+void Del(int a) {
+    if (cnt[a]==2) {
+        tree.Set(a,1);
+    } else {
+        tree.Set(a,0);
+    }
+    cnt[a]--;
+}
+
+int Get_ans(char type) {
+    if (type=='C') {
+        return tree.tree[0].ans;
+    }
+    return tree.tree[0].mx - tree.tree[0].mn;
+}
+
+int main() {
+
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+    int n;
+    cin>>n;
+    bsz = 700;
+    vector<int> a(n+5);
+    vector<int> c;
+    unordered_map<int,int> mp;
+    mp.clear();
+    for(int i=1;i<=n;i++) {
+        cin>>a[i];
+        c.push_back(a[i]);
+    }
+
+    sort(c.begin(),c.end());
+    for(int i=0;i<c.size();i++) {
+        mp[c[i]] = i;
+        backmp[i]=c[i];
+    }
+    for(int i=1;i<=n;i++) {
+        a[i] = mp[a[i]];
+    }
+    for(int i=0;i<n-1;i++) {
+        int u,v;
+        cin>>u>>v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+    h[1] = 0;
+    dfs(1,-1);
+    for(int i=1;i<=n;i++) {
+        for(int j=0;j<19;j++) {
+            if (binup[i][j]==-1) {binup[i][j+1]=-1; continue;}
+            binup[i][j+1] = binup[binup[i][j]][j];
+        }
+    }
+
+    tree.Init(n+2);
+
+    int q;
+    cin>>q;
+    vector<query> queries;
+    for(int i=0;i<q;i++) {
+        char type;
+        int u,v;
+        cin>>type>>u>>v;
+        int l,r;
+        int lc = lca(u,v);
+        if (tin[u]>tin[v]) swap(u,v);
+        if (tout[u]<tin[v]) l = tout[u],r = tin[v]; else l = tin[u],r = tin[v];
+        queries.push_back({type,i,l,r + 1,lc});
+    }
+
+    sort(queries.begin(),queries.end(),cmp);
+    vector<int> answers(q);
+    int L = 0, R = 0;
+    for(int i=0;i<q;i++) {
+        int l = queries[i].l, r = queries[i].r, idx = queries[i].idx;
+        while(L>l) {
+            Add(a[tour[L-1]]);
+            L--;
+        }
+        while(R<r) {
+            Add(a[tour[R]]);
+            R++;
+        }
+        while(L<l) {
+            Del(a[tour[L]]);
+            L++;
+        }
+        while(R>r) {
+            Del(a[tour[R-1]]);
+            R--;
+        }
+        int help = a[queries[i].lc];
+        if (cnt[help]!=1) {
+            tree.Set(help,1);
+            answers[idx] = Get_ans(queries[i].type);
+            tree.Set(help,0);
+        } else answers[idx] = Get_ans(queries[i].type);
+    }
+
+    for(int i=0;i<q;i++) cout<<answers[i]<<'\n';
+
+    return 0;
+}

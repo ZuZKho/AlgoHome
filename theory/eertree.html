@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>Дерево Палиндромов</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Дерево Палиндромов или eerTree</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+
+	<div class="summary_block">
+		<div class="main_content">
+
+			<p>Очень слабо знаком с данной темой. Это довольно новый алгоритм, который представляет собой упрощенную версию Суффиксного дерева, но работает только с палиндромами.</p>
+			<p>Все, что я приложу здесь - кусок кода от какой-то самой простой задачи на eerTree.</p>
+			<pre><code>#include&lt;bits/stdc++.h&gt;
+
+using namespace std;
+
+struct Node{
+    vector&lt;int&gt; next;
+    int len, sufflink;
+};
+
+
+struct PalindromeTree{
+    vector&lt;Node&gt; nodes;
+    string s;
+    int cur;
+    vector&lt;int&gt; null;
+
+    void Init() {
+        null.assign(26,-1);
+        nodes = { {null,-1,-1} , {null,0,0} };
+        s = &quot;&quot;;
+        cur = 0;
+    }
+
+
+    void Add(char c) {
+        int l = s.size();
+        s.push_back(c);
+
+        while(l - nodes[cur].len - 1 &lt; 0 || c != s[l - nodes[cur].len - 1]) {
+            cur = nodes[cur].sufflink;
+        }
+
+        if (nodes[cur].next[c - 'a'] == -1) {
+            int nv = nodes.size();
+            nodes[cur].next[c - 'a'] = nv;
+
+            int suffv = nodes[cur].sufflink; // ñóôôèêñíàÿ âåðøèíà ðîäèòåëÿ
+            if (suffv &lt; 0) {
+                suffv = 1;
+            } else {
+                while(c != s[l - nodes[suffv].len - 1]) {
+                    suffv = nodes[suffv].sufflink;
+                }
+                suffv = nodes[suffv].next[c - 'a'];
+            }
+
+            nodes.push_back({null,nodes[cur].len + 2,suffv});
+        }
+
+        cur = nodes[cur].next[c - 'a'];
+    }
+
+
+
+    int Ans() {
+        return nodes.size() - 2;
+    }
+
+};
+
+
+int main() {
+
+    string s;
+    cin&gt;&gt;s;
+
+    PalindromeTree Ptree;
+    Ptree.Init();
+
+    for(int i=0;i&lt;s.size();i++) {
+        Ptree.Add(s[i]);
+        cout&lt;&lt;Ptree.Ans()&lt;&lt;&quot; &quot;;
+    }
+
+    return 0;
+}</code></pre>
+		</div>
+	</div>
+
+
+    <footer></footer>
+</body>
+</html>

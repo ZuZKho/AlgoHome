@@ -1,0 +1,77 @@
+void my_sort(vector<pair<pair<int,int>,int> > &v) {
+    int n=v.size();
+    vector<int> cnt(n);
+    for(int i=0;i<n;i++) {
+        cnt[v[i].first.second]++;
+    }
+    vector<int> pos(n);
+    pos[0]=0;
+    for(int i=1;i<n;i++) {
+        pos[i]=pos[i-1]+cnt[i-1];
+    }
+    vector<pair<pair<int,int>,int> > res(n);
+    for(int i=0;i<n;i++) {
+        res[pos[v[i].first.second]] = v[i];
+        pos[v[i].first.second]++;
+    }
+    v.swap(res);
+    cnt.assign(n,0);
+    for(int i=0;i<n;i++) {
+        cnt[v[i].first.first]++;
+    }
+    pos.assign(n,0);
+    pos[0]=0;
+    for(int i=1;i<n;i++) {
+        pos[i]=pos[i-1]+cnt[i-1];
+    }
+    for(int i=0;i<n;i++) {
+        res[pos[v[i].first.first]] = v[i];
+        pos[v[i].first.first]++;
+    }
+    v.swap(res);
+}
+
+vector<int> build_sa(string s) {
+    s+=char(5);
+    vector<pair<char,int> > symb;
+    int n = s.size();
+    for(int i=0;i<n;i++) {
+        symb.push_back({s[i],i});
+    }
+    sort(symb.begin(),symb.end());
+    vector<int> c(n);
+    c[symb[0].second] = 0;
+    for(int i=1;i<n;i++) {
+        if (symb[i].first==symb[i-1].first) {
+            c[symb[i].second] = c[symb[i-1].second];
+        } else {
+            c[symb[i].second] = c[symb[i-1].second] + 1;
+        }
+    }
+    for(int l = 1;(1<<l)<=n*2;l++) {
+        vector<pair<pair<int,int>,int> >h(n);
+        for(int i=0;i<n;i++) {
+            h[i]={{c[i],c[(i+(1<<(l-1)))%n]},i};
+        }
+        my_sort(h);
+        c[h[0].second] = 0;
+        for(int i=1;i<n;i++) {
+            if (h[i].first==h[i-1].first) {
+                c[h[i].second] = c[h[i-1].second];
+            } else {
+                c[h[i].second] = c[h[i-1].second] + 1;
+            }
+        }
+    }
+
+    vector<pair<int,int> > ans(n);
+    for(int i=0;i<n;i++) {
+        ans[i]={c[i],i};
+    }
+    sort(ans.begin(),ans.end());
+    vector<int> v;
+    for(int i=1;i<n;i++) {
+        v.push_back(ans[i].second+1);
+    }
+    return v;
+}

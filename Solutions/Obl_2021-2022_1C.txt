@@ -1,0 +1,104 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int MAXN = 3e5 + 5;
+vector<int> g[2][MAXN];
+vector<char> used(MAXN,0);
+int curg = 0, nextg = 1;
+
+
+void dfs(int k,int v) {
+    used[v] = 1;
+    for(int i=0;i<g[curg][v].size();i++) {
+        int to = g[curg][v][i];
+        if (used[to]) continue;
+        g[nextg][v].push_back(to);
+        g[nextg][v + (1<<(k-1))].push_back(to + (1<<(k-1)));
+        g[nextg][to].push_back(v);
+        g[nextg][to + (1<<(k-1))].push_back(v+(1<<(k-1)));
+        dfs(k,to);
+    }
+}
+
+vector<int> cur;
+void dfs_ans(int v) {
+    used[v] = 1;
+    cur.push_back(v);
+    for(int i=0;i<g[curg][v].size();i++) {
+        int to = g[curg][v][i];
+        if (used[to]) continue;
+        dfs_ans(to);
+    }
+}
+
+int main() {
+
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+    int n; cin>>n;
+    string s; cin>>s;
+    int m; cin>>m;
+
+    vector<pair<int,int> > queries[20];
+    while(m--) {
+        int l1,l2,len;
+        cin>>l1>>l2>>len; l1--,l2--;
+        int k = log2(len);
+        queries[k].push_back({l1,l2});
+        l1=l1 + len - (1<<k);
+        l2=l2 + len - (1<<k);
+        queries[k].push_back({l1,l2});
+    }
+
+
+    for(int k=19;k>=1;k--) {
+        for(int i=0;i<queries[k].size();i++) {
+            int u = queries[k][i].first, v = queries[k][i].second;
+            g[curg][u].push_back(v);
+            g[curg][v].push_back(u);
+        }
+        used.assign(MAXN,0);
+        for(int i=0;i<n;i++) {
+            if (!used[i]) {
+                dfs(k,i);
+            }
+        }
+        swap(nextg,curg);
+        for(int i=0;i<MAXN;i++) {
+            g[nextg][i].clear();
+        }
+    }
+
+    for(int i=0;i<queries[0].size();i++) {
+        int u = queries[0][i].first, v = queries[0][i].second;
+        g[curg][u].push_back(v);
+        g[curg][v].push_back(u);
+    }
+
+    bool flag = 1;
+    used.assign(MAXN,0);
+    for(int i=0;i<n;i++) {
+        if (!used[i]) {
+            cur.clear();
+            dfs_ans(i);
+            char c = '?';
+            for(int j=0;j<cur.size();j++) {
+                if (s[cur[j]]!='?') {
+                    if (c=='?' || s[cur[j]]==c) c = s[cur[j]]; else {c = '#'; break;}
+                }
+            }
+            if (c=='#') flag = 0;
+            if (c=='?') c = 'a';
+            for(int j=0;j<cur.size();j++) {
+                s[cur[j]] = c;
+            }
+        }
+    }
+
+    if (flag) cout<<s<<'\n'; else cout<<-1<<'\n';
+
+    return 0;
+}

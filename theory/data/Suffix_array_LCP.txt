@@ -1,0 +1,21 @@
+vector<int> build_lcp(string &s,vector<int> &sa) {
+
+	vector<int> p(sa.size());
+	for(int i=0;i<sa.size();i++) {
+		p[sa[i]]=i;
+	}
+
+	int ind=0;
+	vector<int> lcp(sa.size()-1);
+	for(int i=0;i<sa.size();i++) {
+		int pos=p[i];
+		if (pos==sa.size()-1) {
+			ind=0;
+			continue;
+		}
+		while(sa[pos] + ind < sa.size() && sa[pos+1] + ind < sa.size() && s[sa[pos]+ind]==s[sa[pos+1]+ind]) ind++;
+		lcp[pos]=ind;
+		ind=max(ind-1,0);
+	}
+	return lcp;
+}

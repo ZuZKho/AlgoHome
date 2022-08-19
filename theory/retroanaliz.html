@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>Ретроанализ</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Ретроанализ</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+
+	<div class="summary_block">
+		<div class="main_content">
+			<p>Здесь будет представлен код для популярной задачи "Ретроанализ для маленьких".</p>
+			<pre><code>#include&lt;bits/stdc++.h&gt;
+
+using namespace std;
+
+void solve(int n,int m) {
+    vector&lt;int&gt; g[n],rg[n];
+    for(int i=0;i&lt;m;i++) {
+        int x,y;
+        cin&gt;&gt;x&gt;&gt;y;
+        g[x-1].push_back(y-1);
+        rg[y-1].push_back(x-1);
+    }
+    vector&lt;int&gt; res(n,0);
+    vector&lt;int&gt; cnt(n);
+    vector&lt;int&gt; moves(n,-1);
+    queue&lt;int&gt; q;
+    for(int i=0;i&lt;n;i++) {
+        cnt[i]=g[i].size();
+        if (cnt[i]==0) {
+            res[i]=-1;
+            moves[i]=0;
+            q.push(i);
+        }
+    }
+    while(!q.empty()) {
+        int v = q.front();
+        q.pop();
+        if (res[v]==-1) {
+            for(int u : rg[v]) {
+                if (res[u]==0) {
+                    res[u] = 1;
+                    moves[u] = moves[v] + 1;
+                    q.push(u);
+                }
+            }
+        } else {
+            for(int u : rg[v]) {
+                if (res[u]==0) {
+                    cnt[u]--;
+                    if (cnt[u]==0) {
+                        res[u] = -1;
+                        moves[u] = moves[v] + 1;
+                        q.push(u);
+                    }
+                }
+            }
+        }
+    }
+
+    for(int i=0;i&lt;n;i++) {
+        if (res[i]==0) cout&lt;&lt;&quot;DRAW&quot;&lt;&lt;'\n'; else
+        if (res[i]==-1) cout&lt;&lt;&quot;SECOND&quot;&lt;&lt;'\n'; else
+        cout&lt;&lt;&quot;FIRST&quot;&lt;&lt;'\n';
+    }
+    cout&lt;&lt;'\n';
+
+}
+
+
+int main() {
+
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+
+    int n,m;
+    while(cin&gt;&gt;n&gt;&gt;m) {
+        solve(n,m);
+    }
+
+    return 0;
+}</code></pre>
+		</div>
+	</div>
+
+	<div class="problems_block">
+		<div class="main_content">
+			<table>
+				<col width="20%">
+   				<col width="65%">
+				<col width="15%">
+				<tr>
+					<th>Задача</th>
+					<th>Примечание/Подсказки</th>
+					<th>Решение</th>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/problemset/problem/936/B" target="_blank">CF_936_B</a></td>
+					<td><ul>
+						<li>Задача на игру.</li>
+					</ul></td>
+					<td></td>
+				</tr>
+
+				<tr>
+					<td><a href="#">Интернет-олимпиады, Сезон 2020-2021, Первая личная олимпиада. Задача C. Кибер-взлом.</a></td>
+					<td><ul>
+						<li>Ссылка не рабочая, не пытайтесь. Где решить и разбор ищите сами.</li>
+					</ul></td>
+					<td></td>
+				</tr>
+			</table>
+
+		</div>
+	</div>
+
+
+
+    <footer></footer>
+</body>
+</html>

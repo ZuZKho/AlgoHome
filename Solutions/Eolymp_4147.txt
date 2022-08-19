@@ -1,0 +1,127 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int srand() {
+    if (RAND_MAX==(1<<15)-1)
+        return (rand()<<15) + rand();
+    return rand();
+}
+
+struct Node{
+    int key,pri,sz;
+    Node * l, * r;
+    Node(int key) : key(key), sz(1), pri(srand()), l(nullptr), r(nullptr) {}
+};
+
+Node * tmp1,* tmp2, * tmp3;
+
+int get_sz(Node* v) {
+    if (!v) return 0; else return v->sz;
+}
+
+void upd(Node* v) {
+    if(v) {
+        v->sz = get_sz(v->l) + get_sz(v->r) + 1;
+    }
+}
+
+void split(Node * root, Node*& l,Node*& r,long long key) {
+    if (!root) {
+        l = r = nullptr;
+        return;
+    }
+    if (root->key < key) {
+        split(root->r,root->r,r,key);
+        l=root;
+        upd(l);
+    } else {
+        split(root->l,l,root->l,key);
+        r=root;
+        upd(r);
+    }
+}
+
+void merge(Node*& root,Node* l,Node* r) {
+    if (!l||!r) {
+        root = l ? l:r;
+        return;
+    }
+    if (l->pri > r->pri) {
+        merge(l->r,l->r,r);
+        root = l;
+    } else {
+        merge(r->l,l,r->l);
+        root = r;
+    }
+    upd(root);
+}
+
+void insert(Node*& root,long long key) {
+    Node* ins = new Node(key);
+    split(root,tmp1,tmp2,key);
+    merge(tmp1,tmp1,ins);
+    merge(root,tmp1,tmp2);
+}
+void erase(Node*& root,int key) {
+    split(root,tmp1,tmp2,key);
+    split(tmp2,tmp2,tmp3,key+1);
+    merge(root,tmp1,tmp3);
+}
+bool check(Node* root,int key) {
+    if (!root) return 0;
+    if (root->key==key) return 1;
+    if (root->key>key) return check(root->l,key); else return check(root->r,key);
+}
+
+int kth(Node* root,int k) {
+    if (!root) return -1;
+    if (get_sz(root->l)==k) return root->key;
+    if (get_sz(root->l)>k) return kth(root->l,k);
+    return kth(root->r,k-get_sz(root->l)-1);
+}
+
+int next(Node* root,int x) {
+    if (!root) return INT_MAX;
+    if (root->key<=x) return next(root->r,x);
+    return min(root->key,next(root->l,x));
+}
+
+int prev(Node* root,int x) {
+    if (!root) return -INT_MAX;
+    if (root->key>=x) return prev(root->l,x);
+    return max(root->key,prev(root->r,x));
+}
+
+int main() {
+
+    Node* dd = nullptr;
+    string type;
+    while(cin>>type) {
+        int x;
+        cin>>x;
+        if (type=="insert") {
+            if (!check(dd,x)) insert(dd,x);
+        }
+        if (type=="delete") {
+            if (check(dd,x)) erase(dd,x);
+        }
+        if (type=="exists") {
+            cout<<(check(dd,x)?"true":"false")<<endl;
+        }
+        if (type=="next") {
+            int ans = next(dd,x);
+            if (ans == INT_MAX) cout<<"none"<<endl; else cout<<ans<<endl;
+        }
+        if (type=="prev") {
+            int ans = prev(dd,x);
+            if (ans == -INT_MAX) cout<<"none"<<endl; else cout<<ans<<endl;
+        }
+        if (type=="kth") {
+            int ans = kth(dd,x-1);
+            if (ans==-1) cout<<"none"<<endl; else cout<<ans<<endl;
+        }
+    }
+
+    return 0;
+}

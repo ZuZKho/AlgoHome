@@ -1,0 +1,137 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int MAXN = 5e5 + 5;
+const int MOD = 998244353;
+
+struct SegTree{
+
+    int sz = 1;
+    struct Node{
+        int val,oper;
+    };
+
+    vector<Node> tree;
+
+    void Init(int n) {
+        while(sz<n) sz*=2;
+        tree.assign(sz*2,{0,0});
+    }
+
+    int summ(int v,int tl,int tr,int l,int r) {
+        push(v,tl,tr);
+        if (l<=tl && tr<=r) {
+            return tree[v].val;
+        }
+        if (tl>=r || tr<=l) return 0;
+        int m = (tl + tr) / 2;
+        int res1 = summ(v*2+1,tl,m,l,r);
+        int res2 = summ(v*2+2,m,tr,l,r);
+        int res = res1 + res2;
+        if (res>=MOD) res-=MOD;
+        return res;
+    }
+
+    int Summ(int l,int r) {
+        return summ(0,0,sz,l,r+1);
+    }
+
+    void push(int v,int tl,int tr) {
+        if (tree[v].oper==0 || tr - tl==1) return;
+        tree[v*2+1].oper+=tree[v].oper; if (tree[v*2+1].oper>=MOD) tree[v*2+1].oper-=MOD;
+        tree[v*2+2].oper+=tree[v].oper; if (tree[v*2+2].oper>=MOD) tree[v*2+2].oper-=MOD;
+        int m = (tl + tr) / 2;
+        tree[v*2+1].val = (tree[v*2+1].val + tree[v].oper*1ll*(m-tl))%MOD;
+        tree[v*2+2].val = (tree[v*2+2].val + tree[v].oper*1ll*(m-tl))%MOD;
+        tree[v].oper = 0;
+    }
+
+    void add(int v,int tl,int tr,int l,int r,int val) {
+        push(v,tl,tr);
+        if (l<=tl && tr<=r) {
+            tree[v].oper += val; if (tree[v].oper>=MOD) tree[v].oper-=MOD;
+            tree[v].val = (tree[v].val + val*1ll*(tr - tl)) % MOD;
+            return;
+        }
+        if (tr<=l || tl>=r) return;
+        int m = (tl + tr) / 2;
+        add(v*2+1,tl,m,l,r,val);
+        add(v*2+2,m,tr,l,r,val);
+        tree[v].val = tree[v*2+1].val + tree[v*2+2].val;
+        if (tree[v].val>=MOD) tree[v].val-=MOD;
+    }
+
+    void Add(int l,int r,int val) {
+        add(0,0,sz,l,r+1,val);
+    }
+
+    void clean(int v,int tl,int tr) {
+        tree[v].oper = tree[v].val = 0;
+        if (tr-tl==1) return;
+        int m = (tl+tr) / 2;
+        if (tree[v*2+1].val!=0 || tree[v*2+1].oper!=0) clean(v*2+1,tl,m);
+        if (tree[v*2+2].val!=0 || tree[v*2+2].oper!=0) clean(v*2+2,m,tr);
+    }
+
+    void Clear() {
+        clean(0,0,sz);
+    }
+
+};
+
+int main() {
+
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+    int n,m; cin>>n>>m;
+
+    vector<int> a(n);
+    vector<int> b(m);
+    vector<int> poses[MAXN];
+
+    for(int i=0;i<n;i++) {
+        cin>>a[i];
+        poses[a[i]].push_back(i);
+    }
+    for(int j=0;j<m;j++) cin>>b[j];
+
+    SegTree dp[2];
+    dp[0].Init(MAXN);
+    dp[1].Init(MAXN);
+
+    int bef = 0, aft = 1;
+    int help = 0;
+    int ft = -1, lst = -1;
+    for(int i=0;i<n;i++) {
+        if (a[i]==b[0] && ft==-1) {
+            ft = i;
+        } else
+        if (a[i]==b[0] && lst==-1) {
+            lst = i-1;
+        }
+    }
+    if (lst==-1) lst = n-1;
+    if (ft!=-1) dp[bef].Add(ft,lst,1);
+
+    for(int j=1;j<m;j++) {
+        for(int i=0;i<poses[b[j]].size();i++) {
+            int prev, next, cur;
+            cur = poses[b[j]][i];
+            if (i==0) prev = -1; else prev = poses[b[j]][i-1];
+            if (i==poses[b[j]].size()-1) next = n; else next = poses[b[j]][i+1];
+            // ��������� ����� �� �����
+            int add = dp[bef].Summ(prev,cur-1);
+            dp[aft].Add(cur,next-1,add);
+        }
+        swap(aft,bef); // ����� ���������� �������. ����� ��������� �����.
+        dp[aft].Clear();
+     }
+
+     cout<<dp[bef].Summ(n-1,n-1)<<'\n';
+
+
+    return 0;
+}

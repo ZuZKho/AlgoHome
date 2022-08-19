@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>Хеши</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Хеши</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+
+	<div class="summary_block">
+		<div class="main_content">
+
+			<p>Хеши позволяют закодировать строку или подстроку так, что две одинаковые строки дадут одинаковый "код", две разные строки дадут разный "код". Это позволяет упростить сравнение двух строк, т.к. нам достаточно сравнить только два "кода".</p>
+
+			<p>Основной тип хеширования - полиномиальное хеширование. Не нашел внятной теории, вроде на emaxx норм. Погуглите и прочитайте несколько источников, поищите видео на ютубе. Приложу свой код хешей ниже.</p>
+			<p><a href="https://codeforces.com/blog/entry/60445" target="_blank">Статья на CF</a></p>
+			<pre><code>const int mod1=1e9+7,mod2=1e9+9;
+vector&lt;pair&lt;int,int&gt; &gt; h,p_pow;
+
+// Функция, которая считает хеш подстроки
+pair &lt;int, int&gt; get_hash(int l, int r){
+    pair &lt;int, int&gt; ans;
+    ans.first = (h[r + 1].first - h[l].first * 1ll * p_pow[r - l + 1].first) % mod1;
+    if (ans.first &lt; 0){
+        ans.first += mod1;
+    }
+    ans.second = (h[r + 1].second - h[l].second * 1ll * p_pow[r - l + 1].second) % mod2;
+    if (ans.second &lt; 0){
+        ans.second += mod2;
+    }
+    return ans;
+}
+
+// Построение хеша по строке S
+    int n = s.size();
+    int p = 929;
+    h.resize(n+1);
+    p_pow.resize(n+1);
+    p_pow[0] = {1, 1};
+    h[0] = {0, 0};
+    for(int i = 0; i &lt; n; ++i){
+        h[i + 1].first = (h[i].first * 1ll * p + s[i]) % mod1;
+        h[i + 1].second = (h[i].second * 1ll * p + s[i]) % mod2;
+        p_pow[i + 1].first = (p_pow[i].first * 1ll * p) % mod1;
+        p_pow[i + 1].second = (p_pow[i].second * 1ll * p) % mod2;
+    }</code></pre>
+
+			<p>Хеши очень часто применяются вместе с бинарным поиском. Например, чтобы найти количество палиндромов в строке. Выбрав центральный символ палиндрома (или междусимволье в случае четной длины палиндрома) расширяемся в обе стороны бинпоиском. И проверяем равны ли левая и правая часть.</p>
+			<p>Если жюри составят сильные тесты, то хеши могут дать сбой: разные строки могут дать одинаковые хеши. Это явление называется Коллизией. Для избежания этого используются более сложные методы Хеширования, либо используется двойное полиномиальное хеширование. Строки хешируются два раза, по разному модулю или простому числу. И сравнивается не одно число, а сразу два. Это понижает риск коллизии.</p>
+		 	<br><br><h3>Лексикографическая сортировка строк</h3>
+			<p>Можно написать компаратор, который сравнивает две строки с помощью бинарного поиска и хешей и возвращает какая строка меньше(больше). Используя встроенный sort в С++, лексикографическая сортировка массива строк выйдет в n * log n * log n.</p>
+
+			<p>Позже вы познакомитесь с Суффиксным массивом, который позволяет делать практически тоже самое, но за nlogn. Это работает и в обратную сторону. Если вам сложен алгоритм Суффиксного массива (мне сложен), можно написать через хеши, это выйдет на логарифм дольше, но хотя бы что-то будет работать.</p>
+
+		</div>
+	</div>
+
+	<div class="problems_block">
+		<div class="main_content">
+			<table>
+				<col width="20%">
+   				<col width="65%">
+				<col width="15%">
+				<tr>
+					<th>Задача</th>
+					<th>Примечание/Подсказки</th>
+					<th>Решение</th>
+				</tr>
+				<tr>
+					<td><a href="https://informatics.msk.ru/mod/statements/view.php?id=33342#1" target="_blank">Informatics contest</a></td>
+					<td><ul>
+						<li>Пожалуй главная задача в этой теме - задача Е. Если можете решить её - знаете хеши.</li>
+					</ul></td>
+					<td><a href="../Solutions/Informatics_1750.txt" target="_blank">Informatics_1750.txt</a></td>
+				</tr>
+				<tr>
+					<td><a href="https://codeforces.com/gym/103367/problem/B" target="_blank">Зеленый сайт</a></td>
+					<td><ul>
+					</ul></td>
+					<td></td>
+				</tr>
+
+			</table>
+
+		</div>
+	</div>
+
+
+
+    <footer></footer>
+</body>
+</html>

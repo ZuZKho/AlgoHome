@@ -1,0 +1,51 @@
+vector<int> SCS(string s) {
+	s.push_back((char)1);
+
+	int n = s.size();
+	vector<int> a,na,c,nc,cnt;
+
+	cnt.resize(256,0);
+	for(int i=0;i<n;i++)
+		cnt[s[i]]++;
+	for(int i=1;i<256;i++)
+		cnt[i]+=cnt[i-1];
+
+	a.resize(n,-1);
+	for(int i=n-1;i>=0;i--)
+		a[--cnt[s[i]]] = i;
+
+	c.resize(n,0);
+	for(int i=1;i<n;i++)
+		if (s[a[i]]!=s[a[i-1]])
+			c[a[i]]=c[a[i-1]]+1;
+		else
+			c[a[i]]=c[a[i-1]];
+
+	na.resize(n);
+	nc.resize(n);
+	for(int l=1;l<n;l*=2) {
+
+		cnt.assign(n,0);
+		for(int i=0;i<n;i++)
+			cnt[c[i]]++;
+		for(int i=1;i<n;i++)
+			cnt[i]+=cnt[i-1];
+		for(int i=n-1;i>=0;i--) {
+			int j=a[i]-l;
+			if (j<0) j+=n;
+			na[--cnt[c[j]]]=j;
+		}
+		a.swap(na);
+
+		nc[a[0]]=0;
+		for(int i=1;i<n;i++) {
+			if (c[a[i]]==c[a[i-1]] && c[(a[i]+l)%n]==c[(a[i-1]+l)%n])
+				nc[a[i]]=nc[a[i-1]];
+			else
+			    nc[a[i]]=nc[a[i-1]] +1;
+		}
+		c.swap(nc);
+	}
+	a.erase(a.begin());
+	return a;
+}

@@ -1,0 +1,90 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int p=929;
+const int mod=1e9+7;
+int n;
+
+vector<int> h,bh,pp,bpp;
+
+void build_hashes(string s) {
+	h.resize(s.size()+1);
+	bh.resize(s.size()+1);
+	pp.resize(s.size()+1);
+	bpp.resize(s.size()+1);
+
+	h[0]=0;
+	bh[0]=0;
+	pp[0]=1;
+	bpp[0]=1;
+
+	for(int i=0;i<s.size();i++) {
+		h[i+1] = (h[i]*1ll*p+s[i])%mod;
+		pp[i+1]= pp[i]*1ll*p%mod;
+	}
+
+	reverse(s.begin(),s.end());
+	for(int i=0;i<s.size();i++) {
+		bh[i+1] = (bh[i]*1ll*p+s[i])%mod;
+		bpp[i+1]= bpp[i]*1ll*p%mod;
+	}
+}
+
+int get_hash(int l,int r,int sz) {
+	int ans=(h[r+1]-h[l]*1ll*pp[sz])%mod;
+	if (ans<0) ans+=mod;
+	return ans;
+}
+
+int get_bhash(int l,int r,int sz) {
+
+	int ans=(bh[r]-bh[l-1]*1ll*bpp[sz])%mod;
+	if (ans<0) ans+=mod;
+	return ans;
+}
+
+bool is_eq(int l,int r) {
+	int sz=r-l+1;
+	int h1=get_hash(l,r,sz);
+	int h2=get_bhash(n-r,n-l,sz);
+	return h1==h2;
+}
+
+int main() {
+
+	string s;
+	cin>>s;
+	n=s.size();
+	build_hashes(s);
+
+
+	long long ans=0;
+
+	for(int i=0;i<n;i++) {
+		// i is central, m- skol'ko krome 1
+
+		int l=0,r=min(i+1,n-i);
+		while(l+1<r) {
+			int m = (l+r)/2;
+			if (is_eq(i-m,i+m)) l=m; else r=m;
+		}
+		ans+=(long long)l+1;
+	}
+
+	for(int i=0;i<n-1;i++) {
+		// i - posle kakogo stoit razdelitel
+
+		int l=0,r=min(i+2,n-i);
+
+		while(l+1<r) {
+			int m = (l+r)/2;
+			if (is_eq(i-m+1,i+m)) l=m; else r=m;
+		}
+		ans+=(long long)l;
+	}
+
+	cout<<ans<<endl;
+
+	return 0;
+}

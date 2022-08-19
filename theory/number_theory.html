@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="theory_style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <title>Теория чисел</title>
+	<link rel="SHORTCUT ICON" href="../assets/favicon.ico" type="image/x-icon">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   	<script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="main_content">
+            <a href="../index.html">
+            <div id="logo">
+                <p>AlgoHome</p>
+            </div></a>
+            <nav>
+                <a href="javascript:history.back()"><img src="../assets/back.svg"></a>
+                <h1>Теория чисел</h1>
+            </nav>
+            <hr>
+        </div>
+    </header>
+
+    <div class="main_content">
+		<p><em>В основном все темы этого раздела должны прийти с опытом.</em></p>
+		<h2>Лирическое отступление...</h2>
+        <p>
+            \(n + \frac{n}{2}\, + \frac{n}{3}\, + \frac{n}{4}\, + ...  \approx  nlogn\)
+        </p>
+        <p>
+            Количество делителей числа \(\approx\) корень 3 степени из n числа.
+        </p>
+		<p>НОД в английской терминологии - GCD. НОК - LCM. В с++ есть встроенная функция __gcd(a,b), которая возвращает НОД. Насколько помню она оптимальна по времени и представляет собой алгоритм евклида на mod'aх. LCM = a*b / gcd(a,b);</p>
+		<p><a href="https://www.youtube.com/watch?v=xorhm-qscVA" target="_blank">Лекция ITMO от pashka</a></p>
+        <br><h2>Быстрое возведение в степнь</h2>
+		<p>Есть два способа - рекурсивный и без рекурсии. С рекурсивным способом часто возникают проблемы при запуске у себя на компе, возможно это связанно с какими-то настройками компилятора. Однако при отправке все будет нормально. Обычно в случае когда нужно тестить задачу в которой есть рекурсивное бинарное возведение я иду в Codeforces Запуск или Ideone. Возможно такой проблемы не было бы, если бы я писал нерекурсивный способ, но я все равно всегда пишу с рекурсией.</p>
+        <br><h2>Нахождение всех делителей числа</h2>
+		<p>На момент написания не вспомнил ничего лучше этого. Перебираем все числа до корня из n, и смотрим делится ли n на это число...</p>
+        <br><h2>Решето эратосфена и разложение числа на простые множители</h2>
+		<p><a href="https://e-maxx.ru/algo/eratosthenes_sieve" target="_blank">Emaxx</a>, <a href="https://wiki.algocode.ru/index.php?title=%D0%A0%D0%B5%D1%88%D0%B5%D1%82%D0%BE_%D0%AD%D1%80%D0%B0%D1%82%D0%BE%D1%81%D1%84%D0%B5%D0%BD%D0%B0" target="_blank">AlgoCode</a>.</p>
+		<p>Разложение на простые множители умным словом называется Факторизация. Можно поступить как и со способом с нахождением всех делителей. Искать до корня, и в случае с делимостью делить. Вот статья про это - <a href="https://codeforces.com/blog/entry/91302" target="_blank">статья</a>. Я не знаю с какой асимптотикой оно будет работать. Скорее всего за корень.</p>
+		<br><p><em><b>Дисклеймер:</b> то, что будет написано дальше в этом разделе - чисто моя фантазия, которая мне кажется идеальной, но это может быть далеко не так.</em></p><p>С ходу не нашел статьи, скорее подглядел где-то в посылках, ну или придумал сам. В случаях, если число достаточно маленькое (n<=10^7; настолько, что его зацепит решето эратосфена), то можно делать запрос на факторизацию за количество чисел в факторизации, то есть при (n<=10^7; примерно за O(25),), с предварительным предподсчетом решетом эратосфена.
+		Т.к. решето эратосфена по времени забирает гораздо больше времени чем простая корневая факторизация, то запросов на факторизацию должно быть довольно много. Например около n. Тогда вместо асимптотики <em>n*sqrt(n)</em>, мы получим <em>nloglogn + 25*n</em>. И этого достаточно, чтобы значительно улучшить время.</p>
+		<p>Идея: Вместо нулей и единичек в решете эратосфена записываем простое число из которого мы пришли в данное составное, в простых числах ставим ноль. Пример: a[2] = 0, a[3] = 0, a[6] = 2, a[8] = 2, a[9] = 3, a[11] = 0;</p>
+		<p>Тогда вот как будет выглядеть функция факторизации: <em>Осторожно, псевдокод!!!</em></p>
+		<pre><code>vector&lt;int&gt; fact(int k){
+	vector&lt;int&gt; ans;
+	while(a[k]!=0) {
+		ans.push_back(a[k]);
+		k=k/a[k];
+	}
+	ans.push_back(k);
+	return ans;
+}</code></pre>
+
+		<br><h2>Деление по модулю</h2>
+		<p>Чтобы понять назначение данной темы давайте посмотрим на три примера. <br>Как мы складываем по модулю MOD? Легко: a = (b + c) % MOD.<br> Как умножаем по модулю MOD? Также легко: a = b*1ll*c%MOD.<br> А как тогда мы делим по модулю? a = b / c % MOD?? И тут мы видим, что это совершенно не так. Если мы разделим 16 на 4 по модулю 7, то мы получим x = 2/4 = 1/2, что вообще округлится до нуля. А ведь на самом деле 16\4=4.</p>
+		<p>Специально для этого существуют специальные математические доказательства (чето про теорему ферма), ровным счетом из которых нужно знать, что: <br><b>По <em>ПРОСТОМУ</em> модулю MOD</b>, <em>A^-1 = A^(MOD-2)</em></p>
+		<a href="https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE_%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8E_%D1%87%D0%B8%D1%81%D0%BB%D0%BE" target="_blank">Wiki</a>, <a href="http://e-maxx.ru/algo/reverse_element" target="_blank">Emaxx</a>.
+		<p>Эта штука довольно полезна, и её нужно обязательно помнить. Например, без нее вы не сможете посчитать С из n по k.</p>
+		<br><h2>Матожидание и Комбинаторика</h2>
+		<p>Под комбинаторикой я подразумеваю класс задач, где требуется найти A или C из n по k. Таких задачек много на CF'е. Посмотрите авторское или мое решение к одной из таких задач, чтобы писать их правильно и красиво.</p>
+		<p>Матожидание - довольно сложно для меня, я так понимаю специальной теории нет, нужно почитать разборы к задачам и понять примерную концепцию. Возможно есть какая-то теория, но я о ней не знаю.</p>
+		<p>Во время написания статьи нашел очень хорошую инфу на английском. Уроки от Errichto. Матожидание в английской терминологии это - "expected number".<br> <a href="https://www.youtube.com/watch?v=U_h3IjreRek" target="_blank">Видео</a>, <a href="https://codeforces.com/blog/entry/62690" target="_blank">CF 1</a>, <a href="https://codeforces.com/blog/entry/62792" target = "_blank">CF 2</a>.</p>
+		<p>Возможна этот раздел более актуален для CF задач, чем для школьных олимпиад. Однако все может быть, почему бы не пройти его?</p>
+
+		<table>
+			<col width="20%">
+			<col width="65%">
+			<col width="15%">
+			<tr>
+				<th>Задача</th>
+				<th>Примечание/Подсказки</th>
+				<th>Решение</th>
+			</tr>
+
+			<tr>
+				<td><a href="https://codeforces.com/problemset/problem/1458/A" target="_blank">CF 1458A</a></td>
+				<td><ul>
+					<li>Свойства НОДа.</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://informatics.msk.ru/mod/statements/view.php?chapterid=623#1" target="_blank">Informatics 623</a></td>
+				<td><ul>
+					<li>Разложение на простые</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/contest/1493/problem/D" target="_blank">CF 1493D</a></td>
+				<td><ul>
+					<li>Теория чисел...</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/problemset/problem/1452/D" target="_blank">CF 1452В</a></td>
+				<td><ul>
+					<li>Теория вероятности...</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/contest/1557/problem/C" target="_blank">CF 1452В</a></td>
+				<td><ul>
+					<li>Теория вероятности...</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/gym/103367/problem/D" target="_blank">Интернет-олимпиады 2021-2022, первая командная</a></td>
+				<td><ul>
+					<li>Довольно сложный разбор(его можно посмотреть на "зеленом" сайте), делал по другому. </li>
+				</ul></td>
+				<td><a href="../Solutions/GigaSkeletons.txt" target="_blank">GigaSkeletons.txt</a></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/contest/1652/problem/D" target="_blank">Технокубок Финал 21-22 D</a></td>
+				<td><ul>
+					<li>В этой задаче собрано практически всё из этой темы. + ещё дерево есть.</li>
+					<li>Каким-то магическим способом решил эту задачу прямо на олимпиаде. Поэтому скорее всего есть отличия от разбора.</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/gym/103414/problem/H" target="_blank">Отбор ВКОШП 21-22 H</a></td>
+				<td><ul>
+					<li>Интересное использование алгоритма Евклида.</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/problemset/problem/300/C" target="_blank">CF 300С</a></td>
+				<td><ul>
+					<li>Комбинаторика</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/contest/1462/problem/E2" target="_blank">CF 1462Е2</a></td>
+				<td><ul>
+					<li>Комбинаторика</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/contest/1569/problem/C" target="_blank">CF 1569С</a></td>
+				<td><ul>
+					<li>Комбинаторика</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/problemset/problem/351/B" target="_blank">CF 351B</a></td>
+				<td><ul>
+					<li>Матожидание</li>
+				</ul></td>
+				<td></td>
+			</tr>
+
+			<tr>
+				<td><a href="https://codeforces.com/problemset/problem/1453/D" target="_blank">CF 1453D</a></td>
+				<td><ul>
+					<li>Матожидание</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="https://codeforces.com/problemset/problem/1461/C" target="_blank">CF 1461C</a></td>
+				<td><ul>
+					<li>Матожидание</li>
+				</ul></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><ul>
+					<li>Ищите задачи на кфе с тегами комбинаторика, теория чисел, теория вероятности</li>
+				</ul></td>
+				<td></td>
+			</tr>
+		</table>
+    </div>
+
+    <footer></footer>
+</body>
+</html>

@@ -1,0 +1,120 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+struct Query{
+	int x1,y1;
+	int x2,y2;
+	int r,g,b;
+};
+
+short rpref[3100][3100],gpref[3100][3100],bpref[3100][3100];
+
+int main() {
+
+	int n;
+	cin>>n;
+	int w, h;
+	cin>>w>>h;
+	vector<int> masx,masy;
+	masx.push_back(0);
+	masx.push_back(w);
+	masy.push_back(0);
+	masy.push_back(h);
+	vector<Query> q;
+
+	for(int i=0;i<n;i++) {
+		int x1,x2,y1,y2,r,g,b;
+		cin>>x1>>y1>>x2>>y2>>r>>g>>b;
+		q.push_back({x1,y1,x2,y2,r,g,b});
+		masx.push_back(x1);
+		masx.push_back(x2);
+		masy.push_back(y1);
+		masy.push_back(y2);
+	}
+
+	sort(masx.begin(),masx.end());
+	sort(masy.begin(),masy.end());
+
+	map<int,int> mpx,mpy;
+	vector<int> backmpx, backmpy;
+	for(int i=0;i<int(masx.size());i++) {
+		if (i==0 || masx[i]!=masx[i-1]) {
+			mpx[masx[i]] = mpx.size();
+			backmpx.push_back(masx[i]);
+		}
+	}
+	for(int i=0;i<int(masy.size());i++) {
+		if (i==0 || masy[i]!=masy[i-1]) {
+			mpy[masy[i]] = mpy.size();
+			backmpy.push_back(masy[i]);
+		}
+	}
+
+	int w1 = mpx.size(), h1 = mpy.size();
+
+	for(int i=0;i<n;i++) {
+		int x1 = mpx[q[i].x1],y1 = mpy[q[i].y1], x2 = mpx[q[i].x2], y2 = mpy[q[i].y2];
+		int r = q[i].r, g = q[i].g, b = q[i].b;
+
+		rpref[x1][y1] += r;
+		rpref[x2][y1] -= r;
+		rpref[x1][y2] -= r;
+		rpref[x2][y2] += r;
+
+		gpref[x1][y1] += g;
+		gpref[x2][y1] -= g;
+		gpref[x1][y2] -= g;
+		gpref[x2][y2] += g;
+
+		bpref[x1][y1] += b;
+		bpref[x2][y1] -= b;
+		bpref[x1][y2] -= b;
+		bpref[x2][y2] += b;
+	}
+
+	for(int i=0;i<w1;i++) {
+		for(int j=0;j<h1;j++) {
+			if (i==0 && j==0) continue;
+			if (i==0) {
+				rpref[i][j] += rpref[i][j-1];
+				gpref[i][j] += gpref[i][j-1];
+				bpref[i][j] += bpref[i][j-1];
+			} else
+			if (j==0) {
+				rpref[i][j] += rpref[i-1][j];
+				gpref[i][j] += gpref[i-1][j];
+				bpref[i][j] += bpref[i-1][j];
+			} else {
+				rpref[i][j] += rpref[i-1][j] + rpref[i][j-1] - rpref[i-1][j-1];
+				gpref[i][j] += gpref[i-1][j] + gpref[i][j-1] - gpref[i-1][j-1];
+				bpref[i][j] += bpref[i-1][j] + bpref[i][j-1] - bpref[i-1][j-1];
+			}
+		}
+	}
+
+
+	map<int,long long> ans;
+	for(int i=0;i<w1;i++) {
+		for(int j=0;j<h1;j++) {
+			rpref[i][j] = (rpref[i][j] + 31) % 32;
+			gpref[i][j] = (gpref[i][j] + 31) % 32;
+			bpref[i][j] = (bpref[i][j] + 31) % 32;
+			int color = rpref[i][j] * 10000 + gpref[i][j] * 100 + bpref[i][j];
+			long long curw,curh;
+			if (i!=w1-1) curw = backmpx[i + 1] - backmpx[i]; else curw = 0;
+			if (j!=h1-1) curh = backmpy[j + 1] - backmpy[j]; else curh = 0;
+			long long area = curw * curh;
+			if (area!=0) ans[color]+=area;
+		}
+	}
+
+	cout<<ans.size()<<endl;
+	for(auto it = ans.begin();it!=ans.end();it++) {
+		int color = it->first;
+		long long area = it->second;
+		cout<<color/10000<<" "<<color/100%100<<" "<<color%100<<" "<<area<<endl;
+	}
+
+	return 0;
+}

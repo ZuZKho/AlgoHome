@@ -1,0 +1,155 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+struct edge{
+    int u,v,c;
+};
+
+const int MAXN = 1e5 + 5;
+vector<int> g1[MAXN],g[MAXN];
+vector<int> sz(MAXN),tin(MAXN),tout(MAXN),head(MAXN),h(MAXN);
+vector<int> a(MAXN);
+vector<int> par(MAXN);
+int timer = 0;
+
+
+struct SegTree{
+
+    vector<int> tree;
+    int sz = 1;
+    void Init(int n) {
+        while(sz<n) sz*=2;
+        tree.assign(sz*2, 0);
+    }
+
+    void add(int v,int tl,int tr,int pos,int val){
+        if (tr-tl==1) {
+            tree[v] += val;
+            return;
+        }
+        int m = (tl + tr) / 2;
+        if (pos<m) add(v*2+1,tl,m,pos,val); else add(v*2+2,m,tr,pos,val);
+        tree[v] = max(tree[v*2+1],tree[v*2+2]);
+    }
+
+    void Add(int pos,int val) {
+        add(0,0,sz,pos,val);
+    }
+
+    int maxx(int v,int tl,int tr,int l,int r) {
+        if (l<=tl && tr<=r) return tree[v];
+        if (l>=tr || tl>=r) return -1;
+        int m = (tl + tr) / 2;
+        int res1 = maxx(v*2+1,tl,m,l,r);
+        int res2 = maxx(v*2+2,m,tr,l,r);
+        return max(res1,res2);
+    }
+
+    int Max(int l,int r){
+        return maxx(0,0,sz,l,r+1);
+    }
+
+};
+SegTree ABOBA;
+
+void dfs_g(int v,int p) {
+    for(int i=0;i<g1[v].size();i++) {
+        int to = g1[v][i];
+        if (to==p) continue;
+        g[v].push_back(to);
+        dfs_g(to,v);
+    }
+}
+
+void dfs_sizes(int v) {
+    sz[v] = 1;
+    for(int i=0;i<g[v].size();i++) {
+        int to = g[v][i];
+        dfs_sizes(to);
+        sz[v]+=sz[to];
+        if (sz[to] > sz[g[v][0]]) {
+            swap(g[v][0],g[v][i]);
+        }
+    }
+}
+
+
+void hld(int v) {
+    tin[v] = timer++;
+    for(int i=0;i<g[v].size();i++) {
+        int to = g[v][i];
+        par[to] = v;
+        if (i==0) head[to] = head[v]; else head[to] = to;
+        hld(to);
+    }
+    tout[v] = timer;
+}
+
+
+bool ancestor(int a,int b) {
+    return tin[a]<=tin[b] && tin[b]<tout[a];
+}
+
+void up(int &a,int &b,int &ans) {
+    while(!ancestor(head[a],b)) {
+        ans = max(ans,ABOBA.Max(tin[head[a]],tin[a]));
+        a = par[head[a]];
+    }
+}
+
+int query(int a,int b) {
+    int ans = -1;
+    up(a,b,ans);
+    up(b,a,ans);
+    if (!ancestor(a,b)) swap(a,b);
+    ans = max(ans,ABOBA.Max(tin[a],tin[b]));
+    return ans;
+}
+
+void solve() {
+
+    int n; cin>>n;
+    timer = 0;
+
+    for(int i=0;i<n-1;i++) {
+        int u,v;
+        cin>>u>>v;
+        g1[u].push_back(v);
+        g1[v].push_back(u);
+    }
+
+    dfs_g(1,-1);
+    h[1] = 0;
+    dfs_sizes(1);
+    head[1] = 1;
+    hld(1);
+
+    int q;
+    cin>>q;
+    while(q--) {
+        char t; cin>>t;
+        if (t=='I') {
+            int u, val; cin>>u>>val;
+            ABOBA.Add(tin[u],val);
+        } else {
+            int u,v;
+            cin>>u>>v;
+            cout<<query(u,v)<<'\n';
+        }
+    }
+
+}
+
+int main() {
+
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+    ABOBA.Init(MAXN);
+    solve();
+
+
+    return 0;
+}

@@ -1,0 +1,141 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int MAXN = 1e5 + 5;
+
+vector<pair<int,int> > g[MAXN];
+vector<int> dist(MAXN,1e9);
+
+void dijkstra() {
+    set<pair<int,int> > q;
+    for(int i=0;i<MAXN;i++) {
+        if (dist[i]==0) q.insert({dist[i],i});
+    }
+    while(!q.empty()) {
+        int v = q.begin()->second;
+        q.erase(q.begin());
+        for(int i=0;i<g[v].size();i++) {
+            int to = g[v][i].first,len = g[v][i].second;
+            if (dist[to] > dist[v] + len) {
+                q.erase({dist[to],to});
+                dist[to] = dist[v] + len;
+                q.insert({dist[to],to});
+            }
+        }
+    }
+}
+
+
+struct edge{
+    int v1,v2,w;
+};
+bool cmp(edge &a,edge &b) {
+    return a.w>b.w;
+}
+
+
+
+struct SNM{
+
+    vector<int> par;
+
+    void Init() {
+        par.resize(MAXN);
+        for(int i=0;i<MAXN;i++) par[i]=i;
+    }
+
+    int find(int v) {
+        if (par[v]!=v) return par[v] = find(par[v]); else return par[v];
+    }
+
+    void unite(int u,int v) {
+        u = find(u);
+        v = find(v);
+        par[u] = v;
+    }
+};
+
+int main() {
+
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+    int n,m;
+    cin>>n>>m;
+    vector<edge> edges;
+    SNM snm1,snm2;
+    snm1.Init();
+    snm2.Init();
+    for(int i=0;i<m;i++) {
+        int x,y,w;
+        cin>>x>>y>>w;
+        g[x].push_back({y,w});
+        g[y].push_back({x,w});
+        edges.push_back({x,y,w});
+    }
+
+
+    int k;
+    cin>>k;
+    for(int i=0;i<k;i++) {
+        int x;
+        cin>>x;
+        dist[x] = 0;
+    }
+    dijkstra();
+
+    for(int i=0;i<m;i++) {
+        edges[i].w = min(dist[edges[i].v1],dist[edges[i].v2]);
+    }
+    sort(edges.begin(),edges.end(),cmp);
+
+
+    int Q;
+    cin>>Q;
+    vector<pair<int,int> > inq;
+    vector<bool> isready(MAXN,0);
+    vector<int> ans(MAXN,-1);
+    for(int i=0;i<Q;i++) {
+        int x,y;
+        cin>>x>>y;
+        inq.push_back({x,y});
+    }
+
+
+
+    int bsz = sqrt(m) + 2;
+    int lastadd = -1;
+
+    for(int i = min(bsz,m);i<=m;i+=max(1,min(bsz,m-i))) {
+        for(int j=lastadd+1;j<i;j++) {
+            snm1.unite(edges[j].v1,edges[j].v2);
+        }
+
+        vector<int> needtocalc;
+        for(int j=0;j<Q;j++) {
+            if (!isready[j] && snm1.find(inq[j].first)==snm1.find(inq[j].second)) {
+                needtocalc.push_back(j);
+            }
+        }
+
+        for(int j=lastadd+1;j<i;j++) {
+            snm2.unite(edges[j].v1,edges[j].v2);
+            for(int g=0;g<needtocalc.size();g++) {
+                if (!isready[needtocalc[g]] &&
+                    snm2.find(inq[needtocalc[g]].first)==snm2.find(inq[needtocalc[g]].second)) {
+                        ans[needtocalc[g]] = edges[j].w;
+                        isready[needtocalc[g]] = 1;
+                    }
+            }
+        }
+
+        lastadd = i - 1;
+    }
+
+
+    for(int i=0;i<Q;i++) cout<<ans[i]<<'\n';
+
+    return 0;
+}

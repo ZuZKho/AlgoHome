@@ -1,0 +1,119 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+struct query{
+    int l,r,idx;
+};
+
+int bsz;
+int bcnt;
+const int MAXK = 1e6 + 6;
+vector<int> lef(MAXK,-1),righ(MAXK,-1);
+int ans;
+
+bool cmp(query &a,query &b) {
+    return a.r < b.r;
+}
+
+int main() {
+
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+    int n,m,k;
+    cin>>n>>m>>k;
+    bsz = sqrt(n) + 2;
+    bcnt = n / bsz + 5;
+    vector<int> a(n),pref(n + 1,0);
+
+    for(int i=0;i<n;i++) {
+        cin>>a[i];
+        pref[i+1] = (pref[i] + a[i]) % k;
+    }
+
+    vector<query> common_queries;
+    vector<query> blocks[bcnt];
+    vector<int> answers(m);
+
+    for(int i=0;i<m;i++) {
+        int l,r;
+        cin>>l>>r; r++; l--;
+        if (r-l>bsz + 10) {
+            blocks[l/bsz].push_back({l,r,i});
+        } else {
+            common_queries.push_back({l,r,i});
+        }
+    }
+
+    for(int i=0;i<bcnt;i++) {
+        sort(blocks[i].begin(),blocks[i].end(),cmp);
+    }
+
+    for(int i=0;i<common_queries.size();i++) {
+        int mx = 0;
+        int l = common_queries[i].l, r = common_queries[i].r, idx = common_queries[i].idx;
+        for(int j=l;j<r;j++){
+            if (lef[pref[j]]==-1) {
+                lef[pref[j]] = righ[pref[j]] = j;
+            } else {
+                righ[pref[j]] = j;
+            }
+            mx = max(righ[pref[j]] - lef[pref[j]],mx);
+        }
+        for(int j=l;j<r;j++) {
+            lef[pref[j]] = righ[pref[j]] = -1;
+        }
+        answers[idx] = mx;
+    }
+
+    for(int b=0;b<bcnt;b++) {
+        int needl = b*bsz + bsz - 1;
+        int L = needl, R = needl;
+        ans = 0;
+        for(int i=0;i<blocks[b].size();i++) {
+            int l = blocks[b][i].l, r = blocks[b][i].r, idx = blocks[b][i].idx;
+            while(R<r) {
+                if (lef[pref[R]]==-1) {
+                    lef[pref[R]] = righ[pref[R]] = R;
+                } else {
+                    righ[pref[R]] = R;
+                }
+                ans = max(righ[pref[R]] - lef[pref[R]],ans);
+                R++;
+            }
+            int prev = ans;
+            vector<int> changed;
+            vector<int> lleft,rright;
+            for(int j=l;j<L;j++) {
+                changed.push_back(pref[j]);
+                lleft.push_back(lef[pref[j]]);
+                rright.push_back(righ[pref[j]]);
+            }
+            while(L>l) {
+                L--;
+                if (lef[pref[L]]==-1) {
+                    lef[pref[L]] = righ[pref[L]] = L;
+                } else {
+                    lef[pref[L]] = L;
+                }
+                ans = max(righ[pref[L]] - lef[pref[L]],ans);
+            }
+            answers[idx] = ans;
+            ans = prev;
+            for(int j=0;j<changed.size();j++) {
+                lef[changed[j]] = lleft[j];
+                righ[changed[j]] = rright[j];
+            }
+            L = needl;
+        }
+        for(int i=L;i<R;i++) {
+            lef[pref[i]] = righ[pref[i]] = -1;
+        }
+    }
+
+    for(int i=0;i<m;i++) cout<<answers[i]<<'\n';
+
+    return 0;
+}
