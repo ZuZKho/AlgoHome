@@ -1,0 +1,70 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int MAXN = 505;
+
+int cap[MAXN][MAXN], flow[MAXN][MAXN];
+vector<int> level(MAXN,-1), first(MAXN, 0);
+vector<int> g[MAXN];
+
+bool bfs(int start, int finish) {
+    queue<int> q;
+    q.push(start);
+    level[start] = 0;
+    while(!q.empty()) {
+        int v = q.front(); q.pop();
+        for(int i=0;i<g[v].size();i++) {
+            int to = g[v][i];
+            if (level[to]==-1 && cap[v][to] - flow[v][to]) {
+                level[to] = level[v] + 1;
+                q.push(to);
+            }
+        }
+    }
+    return level[finish]!=-1;
+}
+
+int dfs(int v,int finish, int delta) {
+    if (v==finish) return delta;
+    for(int i=first[v];i<g[v].size();i++, first[v]++) {
+        int to = g[v][i];
+        if (level[to] == level[v] + 1 && cap[v][to] - flow[v][to]) {
+            int res = dfs(to,finish,min(delta,cap[v][to]-flow[v][to]));
+            if (res>0) {
+                flow[v][to]+=res;
+                flow[to][v]-=res;
+                return res;
+            }
+        }
+
+    }
+    return 0;
+}
+
+
+int main() {
+
+    int n, m;
+    cin>>n>>m;
+    for(int i=0;i<m;i++) {
+        int u,v,f;
+        cin>>u>>v>>f;
+        g[u].push_back(v);
+        g[v].push_back(u);
+        cap[u][v] = f;
+    }
+
+    long long ans = 0;
+    while(bfs(1,n)) {
+        while(int cur = dfs(1,n,2e9)) {
+            ans += 1ll*cur;
+        }
+        level.assign(MAXN, -1);
+        first.assign(MAXN, 0);
+    }
+
+    cout<<ans<<'\n';
+
+    return 0;
+}

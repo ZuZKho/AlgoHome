@@ -1,0 +1,44 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int MAXN = 11;
+
+int cap[MAXN][MAXN], flow[MAXN][MAXN];
+vector<char> used(MAXN, 0);
+
+int dfs(int v,int delta,int finish) {
+    used[v] = 1;
+    if (v==finish) return delta;
+    for(int i=1;i<MAXN;i++) {
+        if (cap[v][i] - flow[v][i] > 0 && !used[i]) {
+            int res = dfs(i, min(delta, cap[v][i] - flow[v][i]), finish);
+            flow[v][i]+=res;
+            flow[i][v]-=res;
+            if (res!=0) return res;
+        }
+    }
+    return 0;
+}
+
+int main() {
+
+    int n, m;
+    cin>>n>>m;
+
+    for(int i=0;i<m;i++) {
+        int a,b,c;
+        cin>>a>>b>>c;
+        cap[a][b] = c;
+    }
+
+    int ans = 0;
+    while(int delta = dfs(1,1e9, n)) {
+        ans += delta;
+        used.assign(MAXN, 0);
+    }
+
+    cout<<ans<<'\n';
+
+    return 0;
+}

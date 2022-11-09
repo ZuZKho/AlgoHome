@@ -1,0 +1,65 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int n;
+int cap[102][102], flow[102][102];
+int par[102];
+vector<bool> used;
+queue<int> q;
+
+
+int bfs(int start, int end) {
+	used.assign(n+2,0);
+    q.push(start);
+    par[start]=-1;
+    used[1]=1;
+    while(!q.empty())  {
+    	int u=q.front(); q.pop();
+	    for(int v = 1; v <= n; v++ ) {
+	        if(!used[v] && (cap[u][v]-flow[u][v]) > 0) {
+	        	used[v]=1;
+	        	q.push(v);
+	        	par[v]=u;
+	        }
+		}
+    }
+
+  	return used[end];
+}
+
+int max_flow(int source, int stock) {
+    int maxflow=0;
+    for(int i=1;i<=n;i++) {
+  	    for(int j=1;j<=n;j++) {
+  	    	flow[i][j]=0;
+	    }
+    }
+    while(bfs(source,stock)) {
+        int delta=1e9;
+        for(int u = n; par[u] >= 1; u=par[u]) {
+	    	delta=min(delta, ( cap[par[u]][u] - flow[par[u]][u] ) );
+        }
+        for(int u = n; par[u] >= 1; u=par[u])
+	    {
+	        flow[par[u]][u] += delta;
+	        flow[u][par[u]] -= delta;
+	    }
+        maxflow+=delta;
+    }
+  return maxflow;
+}
+
+int main() {
+
+    int m;
+    cin>>n>>m;
+	for(int i=0,x,y,val;i<m;i++) {
+		cin>>x>>y>>val;
+		cap[x][y]=val;
+	}
+
+	cout<<max_flow(1,n)<<endl;
+
+  return 0;
+}
