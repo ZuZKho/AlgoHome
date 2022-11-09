@@ -1,0 +1,83 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int MAXN = 205, INF = 2e9;
+int cap[MAXN][MAXN], flow[MAXN][MAXN], cost[MAXN][MAXN];
+vector<int> dist(MAXN, INF);
+vector<char> used(MAXN, 0);
+vector<int> par(MAXN, 0);
+vector<int> g[MAXN];
+
+int SPFA(int start,int finish) {
+    dist.assign(MAXN,INF);
+    queue<int> q;
+    dist[start] = 0;
+    q.push(start);
+    used[start] = 1;
+
+    while(!q.empty()) {
+        int v = q.front(); q.pop(); used[v] = 0;
+        for(int i=0;i<g[v].size();i++) {
+            int to = g[v][i];
+            if (dist[to] > dist[v] + cost[v][to] && cap[v][to] - flow[v][to]) {
+                dist[to] = dist[v] + cost[v][to];
+                par[to] = v;
+                if (!used[to]) {
+                    q.push(to);
+                    used[to] = 1;
+                }
+            }
+        }
+    }
+
+    return dist[finish];
+}
+
+
+int main() {
+
+    int k;
+    cin>>k;
+    int start = 2*k, finish = start + 1;
+    for(int i=0;i<k;i++) {
+        for(int j=0;j<k;j++) {
+            int x;
+            cin>>x;
+            int from = i, to = k+j;
+            cap[from][to] = 1;
+            cost[from][to] = x;
+            cost[to][from] = -x;
+            g[from].push_back(to);
+            g[to].push_back(from);
+        }
+        cap[start][i] = 1;
+        g[start].push_back(i);
+        g[i].push_back(start);
+        cap[k+i][finish] = 1;
+        g[k+i].push_back(finish);
+        g[finish].push_back(k+i);
+    }
+
+    long long ans = 0;
+    while(int dist = SPFA(start,finish)) {
+        if (dist==INF) break;
+        int curflow = INF;
+        int curv = finish;
+        while(curv!=start) {
+            curflow = min(curflow, cap[par[curv]][curv] - flow[par[curv]][curv]);
+            curv = par[curv];
+        }
+        ans+=dist*1ll*curflow;
+        curv = finish;
+        while(curv!=start) {
+            flow[par[curv]][curv]+=curflow;
+            flow[curv][par[curv]]-=curflow;
+            curv = par[curv];
+        }
+    }
+
+    cout<<ans<<endl;
+
+    return 0;
+}
